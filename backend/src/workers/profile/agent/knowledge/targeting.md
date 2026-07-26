@@ -10,6 +10,13 @@ and seniority the developer is aiming at (e.g. "early-career backend / AI-agent
 engineer") and the domain keywords that role screens on. Mirror the résumé's own
 wording — don't invent a target it doesn't support.
 
+**Honor the brief.** When the intent supplies explicit fields (target role,
+seniority, audience, tone, length, sections to include, or a target job
+description), treat them as instructions and design to them rather than
+re-inferring — e.g. tailor the Summary/Skills keywords to a provided job
+description, and include exactly the requested sections. Still never claim
+anything the résumé/repos don't support.
+
 **Design for two readers at once:**
 
 - *Recruiter / automated screen (first pass):* skims in seconds and may be

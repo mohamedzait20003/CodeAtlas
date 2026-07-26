@@ -2,9 +2,10 @@ import { baseApi } from "../api/baseApi";
 import type { ReposResponse } from "../models/repoModel";
 import type {
   CommitResponse,
-  NarrationResponse,
-  NarrationStartResponse,
-} from "../models/narrationModel";
+  CompositionResponse,
+  CompositionStartResponse,
+  RepoBrief,
+} from "../models/compositionModel";
 
 export async function getRepos(
   page: number,
@@ -16,23 +17,23 @@ export async function getRepos(
   return res.data;
 }
 
-/** Start a "Narrate about Repos" job for one repo (id = its GitHub repo id). */
+/** Start a "Compose a README" job for one repo (id = its GitHub repo id). */
 export async function startRepoGeneration(
   repoId: string,
-  intent?: string,
+  brief?: RepoBrief,
   modelId?: string,
-): Promise<NarrationStartResponse> {
-  const res = await baseApi.post<NarrationStartResponse>(
+): Promise<CompositionStartResponse> {
+  const res = await baseApi.post<CompositionStartResponse>(
     `/repos/${repoId}/generate`,
-    { intent: intent?.trim() || undefined, modelId: modelId || undefined },
+    { brief, modelId: modelId || undefined },
   );
   return res.data;
 }
 
 export async function getRepoGeneration(
   id: string,
-): Promise<NarrationResponse> {
-  const res = await baseApi.get<NarrationResponse>(`/repos/generations/${id}`);
+): Promise<CompositionResponse> {
+  const res = await baseApi.get<CompositionResponse>(`/repos/generations/${id}`);
   return res.data;
 }
 

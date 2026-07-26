@@ -15,13 +15,13 @@ export interface AgentOutput {
 export type PhaseHook = (phase: string) => Promise<void>;
 
 /** Usage-counter column a runner refunds when its job fails. */
-export type UsageField = 'profileNarrationsUsed' | 'generationsUsed';
+export type UsageField = 'profileCompositionsUsed' | 'generationsUsed';
 
 /**
  * Shared lifecycle for a generation worker: load the job, stream phases to the
  * `phase` column for polling, run the concrete agent, persist the result, and
- * refund the reserved quota on failure. The profile ("Narrate Yourself") and repo
- * ("Narrate about Repos") runners each subclass this — separate queues, separate
+ * refund the reserved quota on failure. The profile ("Compose Your Profile") and repo
+ * ("Compose a README") runners each subclass this — separate queues, separate
  * consumers — and supply only how they {@link generate} and which quota to refund.
  */
 export abstract class GenerationRunner {

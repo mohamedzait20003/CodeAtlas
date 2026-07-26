@@ -142,7 +142,7 @@ export class GithubCommitService {
       headers: this.headers(token),
       body: JSON.stringify({
         name: login,
-        description: 'My GitHub profile — narrated by CodeAtlas.',
+        description: 'My GitHub profile — composed by CodeAtlas.',
         auto_init: true,
       }),
     });

@@ -12,7 +12,7 @@ import { RepoReadmeAgentService } from './services/repo-readme-agent.service';
 import { RepoGenerationRunner } from './services/repo-generation-runner.service';
 
 /**
- * "Narrate about Repos" (repo README) worker providers. Independent of the
+ * "Compose a README" (repo README) worker providers. Independent of the
  * profile {@link ProfileWorkerModule} — its own runner, queue, and consumer —
  * so repo generation scales and fails on its own. DB + config come from the
  * parent {@link WorkersModule}.

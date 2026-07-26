@@ -9,7 +9,7 @@ const PLANS = [
     features: {
       repos: "3",
       readmeGenerations: "5 / month",
-      narrations: "1 / month",
+      compositions: "1 / month",
       resumes: "1",
       model: "Economy",
       privateRepos: false,
@@ -28,7 +28,7 @@ const PLANS = [
     features: {
       repos: "25",
       readmeGenerations: "75 / month",
-      narrations: "4 / month",
+      compositions: "4 / month",
       resumes: "5",
       model: "Standard",
       privateRepos: true,
@@ -47,7 +47,7 @@ const PLANS = [
     features: {
       repos: "Unlimited",
       readmeGenerations: "750 / month",
-      narrations: "Unlimited",
+      compositions: "Unlimited",
       resumes: "Unlimited",
       model: "Premium",
       privateRepos: true,
@@ -65,7 +65,7 @@ const PLANS = [
 const ROWS: { label: string; key: keyof (typeof PLANS)[0]["features"] }[] = [
   { label: "Repositories", key: "repos" },
   { label: "Repo READMEs / month", key: "readmeGenerations" },
-  { label: "Narrate Yourself / month", key: "narrations" },
+  { label: "Compose Your Profile / month", key: "compositions" },
   { label: "Saved resumes", key: "resumes" },
   { label: "AI model tier", key: "model" },
   { label: "Private repos", key: "privateRepos" },

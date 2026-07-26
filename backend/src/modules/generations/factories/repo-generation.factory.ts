@@ -10,9 +10,9 @@ export interface RepoGenerationJob {
 export const REPO_GENERATION_QUEUE = 'repo-generation';
 
 /**
- * Queue for "Narrate about Repos" jobs. Kept separate from the profile
+ * Queue for "Compose a README" jobs. Kept separate from the profile
  * {@link ProfileGenerationFactory} so repo-README generation runs on its own worker with
- * independent concurrency — a burst of repo jobs never starves profile narrations.
+ * independent concurrency — a burst of repo jobs never starves profile compositions.
  */
 @Injectable()
 export class RepoGenerationFactory extends BaseQueueFactory<RepoGenerationJob> {

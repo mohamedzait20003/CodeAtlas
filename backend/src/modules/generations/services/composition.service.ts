@@ -17,21 +17,22 @@ import { PushMode } from '@/shared/Domain/enums/push-mode.enum';
 import { tierWithin } from '@/shared/Domain/enums/model-tier.enum';
 import { GithubCommitService } from '@/modules/generations/services/github-commit.service';
 import { ProfileGenerationFactory } from '@/modules/generations/factories/profile-generation.factory';
-import type { StartNarrationDto } from '@/modules/generations/dto/start-narration.dto';
+import type { StartCompositionDto } from '@/modules/generations/dto/start-composition.dto';
+import { composeProfileBrief } from '@/modules/generations/dto/brief.dto';
 import type {
   CommitView,
-  NarrationStartView,
-  NarrationView,
-} from '@/modules/generations/dto/narration.dto';
+  CompositionStartView,
+  CompositionView,
+} from '@/modules/generations/dto/composition.dto';
 
 /**
- * "Narrate Yourself" job lifecycle. Resolves the user's plan + model (catalog,
+ * "Compose Your Profile" job lifecycle. Resolves the user's plan + model (catalog,
  * tier-gated), records the run and enqueues it via {@link ProfileGenerationFactory}, and
- * reports status for polling. The profile-narration quota is reserved upstream
+ * reports status for polling. The profile-composition quota is reserved upstream
  * by the {@link Quota} decorator on the controller.
  */
 @Injectable()
-export class NarrationService {
+export class CompositionService {
   constructor(
     @InjectRepository(Generation)
     private readonly generations: Repository<Generation>,
@@ -43,8 +44,8 @@ export class NarrationService {
 
   async start(
     userId: string,
-    dto: StartNarrationDto,
-  ): Promise<NarrationStartView> {
+    dto: StartCompositionDto,
+  ): Promise<CompositionStartView> {
     const plan = await this.plans.forUser(userId);
     const model = await this.resolveModel(plan, dto.modelId);
 
@@ -54,7 +55,7 @@ export class NarrationService {
         kind: GenerationKind.PROFILE,
         status: GenerationStatus.QUEUED,
         phase: 'queued',
-        intent: dto.intent ?? null,
+        intent: composeProfileBrief(dto.brief),
         aiModelId: model.id,
         provider: model.provider,
         model: model.modelId,
@@ -66,11 +67,11 @@ export class NarrationService {
     return { Id: generation.id };
   }
 
-  async status(userId: string, id: string): Promise<NarrationView> {
+  async status(userId: string, id: string): Promise<CompositionView> {
     const gen = await this.generations.findOne({
       where: { id, userId, kind: GenerationKind.PROFILE },
     });
-    if (!gen) throw new NotFoundException('Narration not found.');
+    if (!gen) throw new NotFoundException('Composition not found.');
 
     return {
       Id: gen.id,
@@ -92,9 +93,9 @@ export class NarrationService {
     const gen = await this.generations.findOne({
       where: { id, userId, kind: GenerationKind.PROFILE },
     });
-    if (!gen) throw new NotFoundException('Narration not found.');
+    if (!gen) throw new NotFoundException('Composition not found.');
     if (gen.status !== GenerationStatus.COMPLETED) {
-      throw new BadRequestException('This narration is not ready to commit.');
+      throw new BadRequestException('This composition is not ready to commit.');
     }
 
     const result = await this.github.commitProfileReadme(userId, content);

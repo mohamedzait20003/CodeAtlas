@@ -29,7 +29,7 @@ const TIERS: Tier[] = [
     features: [
       "3 repositories",
       "5 repo READMEs / mo",
-      "Narrate Yourself 1× / mo",
+      "Compose Your Profile 1× / mo",
       "1 saved resume",
       "Manual & PR push",
     ],
@@ -42,7 +42,7 @@ const TIERS: Tier[] = [
     features: [
       "25 repositories",
       "75 repo READMEs / mo",
-      "Narrate Yourself 4× / mo",
+      "Compose Your Profile 4× / mo",
       "5 saved resumes",
       "Private repos",
       "1 template",
@@ -57,7 +57,7 @@ const TIERS: Tier[] = [
     features: [
       "Unlimited repositories",
       "750 repo READMEs / mo",
-      "Unlimited Narrate Yourself",
+      "Unlimited Compose Your Profile",
       "Unlimited resumes",
       "Bulk generate",
       "Direct-to-branch push",

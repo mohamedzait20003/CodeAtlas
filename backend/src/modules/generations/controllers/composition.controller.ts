@@ -17,44 +17,44 @@ import {
   BaseController,
   type ApiResponse,
 } from '@/shared/Domain/base.controller';
-import { NarrationService } from '@/modules/generations/services/narration.service';
-import { NarrationTailorService } from '@/modules/generations/services/narration-tailor.service';
-import { StartNarrationDto } from '@/modules/generations/dto/start-narration.dto';
-import { TailorNarrationDto } from '@/modules/generations/dto/tailor-narration.dto';
-import { CommitNarrationDto } from '@/modules/generations/dto/commit-narration.dto';
+import { CompositionService } from '@/modules/generations/services/composition.service';
+import { CompositionTailorService } from '@/modules/generations/services/composition-tailor.service';
+import { StartCompositionDto } from '@/modules/generations/dto/start-composition.dto';
+import { TailorCompositionDto } from '@/modules/generations/dto/tailor-composition.dto';
+import { CommitCompositionDto } from '@/modules/generations/dto/commit-composition.dto';
 import type {
   CommitView,
-  NarrationStartView,
-  NarrationView,
+  CompositionStartView,
+  CompositionView,
   TailorView,
-} from '@/modules/generations/dto/narration.dto';
+} from '@/modules/generations/dto/composition.dto';
 
-@Controller('narrations')
-export class NarrationController extends BaseController {
+@Controller('compositions')
+export class CompositionController extends BaseController {
   constructor(
-    private readonly narration: NarrationService,
-    private readonly tailorService: NarrationTailorService,
+    private readonly composition: CompositionService,
+    private readonly tailorService: CompositionTailorService,
   ) {
     super();
   }
 
-  @Quota(QuotaKind.PROFILE_NARRATION)
+  @Quota(QuotaKind.PROFILE_COMPOSITION)
   @Roles(UserRole.USER)
   @Post()
   async start(
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: StartNarrationDto,
-  ): Promise<ApiResponse<NarrationStartView>> {
+    @Body() dto: StartCompositionDto,
+  ): Promise<ApiResponse<CompositionStartView>> {
     return this.ok(
-      await this.narration.start(user.userId, dto),
-      'Narration started.',
+      await this.composition.start(user.userId, dto),
+      'Composition started.',
     );
   }
 
   @Roles(UserRole.USER)
   @Post('tailor')
   async tailor(
-    @Body() dto: TailorNarrationDto,
+    @Body() dto: TailorCompositionDto,
   ): Promise<ApiResponse<TailorView>> {
     return this.ok(await this.tailorService.tailor(dto.draft));
   }
@@ -64,8 +64,8 @@ export class NarrationController extends BaseController {
   async status(
     @CurrentUser() user: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<ApiResponse<NarrationView>> {
-    return this.ok(await this.narration.status(user.userId, id));
+  ): Promise<ApiResponse<CompositionView>> {
+    return this.ok(await this.composition.status(user.userId, id));
   }
 
   @Roles(UserRole.USER)
@@ -73,10 +73,10 @@ export class NarrationController extends BaseController {
   async commit(
     @CurrentUser() user: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: CommitNarrationDto,
+    @Body() dto: CommitCompositionDto,
   ): Promise<ApiResponse<CommitView>> {
     return this.ok(
-      await this.narration.commit(user.userId, id, dto.content),
+      await this.composition.commit(user.userId, id, dto.content),
       'Committed to your profile.',
     );
   }

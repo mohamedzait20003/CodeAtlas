@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-/** Body for POST /narrations/tailor — the user's rough note to sharpen. */
-export class TailorNarrationDto {
+/** Body for POST /compositions/tailor — the user's rough note to sharpen. */
+export class TailorCompositionDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(2000)

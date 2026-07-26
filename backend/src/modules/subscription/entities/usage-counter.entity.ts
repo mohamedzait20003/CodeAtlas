@@ -29,7 +29,7 @@ export class UsageCounter {
   @Column({ type: 'int', name: 'generations_used', default: 0 })
   generationsUsed: number;
 
-  /** "Narrate Yourself" runs used this period (vs `PlanFeatures.profileNarrations`). */
-  @Column({ type: 'int', name: 'profile_narrations_used', default: 0 })
-  profileNarrationsUsed: number;
+  /** "Compose Your Profile" runs used this period (vs `PlanFeatures.profileCompositions`). */
+  @Column({ type: 'int', name: 'profile_compositions_used', default: 0 })
+  profileCompositionsUsed: number;
 }

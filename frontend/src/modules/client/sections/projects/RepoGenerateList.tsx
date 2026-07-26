@@ -9,6 +9,7 @@ import {
   FileSearch,
   PenLine,
   ShieldCheck,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ServerCrash,
@@ -28,6 +29,7 @@ import { Card, CardContent } from "@/common/components/ui/card";
 import { Badge } from "@/common/components/ui/badge";
 import { Button } from "@/common/components/ui/button";
 import { Skeleton } from "@/common/components/ui/skeleton";
+import { Input } from "@/common/components/ui/input";
 import { Textarea } from "@/common/components/ui/textarea";
 import {
   Select,
@@ -36,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/common/components/ui/select";
+
 import { useStore } from "@/store";
 import { useAccountName } from "@/lib/auth/account";
 import { useRepos } from "@/lib/hooks/useRepos";
@@ -45,12 +48,25 @@ import {
   useRepoGeneration,
   useStartRepoGeneration,
 } from "@/lib/hooks/useRepoGeneration";
+import type { RepoBrief } from "@/lib/models/compositionModel";
+import {
+  LENGTHS,
+  PROJECT_TYPES,
+  REPO_AUDIENCES,
+  REPO_SECTIONS,
+  TONES,
+} from "@/lib/models/briefOptions";
 import { EmptyState } from "@/modules/client/components/EmptyState";
 import {
   PhaseProgress,
   type Step,
-} from "@/modules/client/sections/narrate/PhaseProgress";
-import { ReadmeEditor } from "@/modules/client/sections/narrate/ReadmeEditor";
+} from "@/modules/client/sections/compose/PhaseProgress";
+import { ReadmeEditor } from "@/modules/client/sections/compose/ReadmeEditor";
+import {
+  ChipGroup,
+  Field,
+  OptionSelect,
+} from "@/modules/client/sections/compose/BriefControls";
 import type { RepoItem } from "@/lib/models/repoModel";
 
 /** The repo flow has no planning phase — read → write → review. */
@@ -96,8 +112,9 @@ export function RepoGenerateList() {
   const [setup, setSetup] = useState<{ id: string; fullName: string } | null>(
     null,
   );
-  const [intent, setIntent] = useState("");
+  const [brief, setBrief] = useState<RepoBrief>({});
   const [modelId, setModelId] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [gen, setGen] = useState<{ id: string; repo: string } | null>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [committedUrl, setCommittedUrl] = useState<string | null>(null);
@@ -117,17 +134,37 @@ export function RepoGenerateList() {
   const failed = status === "failed";
   const completed = status === "completed";
 
+  const set = <K extends keyof RepoBrief>(k: K, v: RepoBrief[K]) =>
+    setBrief((b) => ({ ...b, [k]: v }));
+
+  /** Trim to the fields the user actually set; undefined if the brief is empty. */
+  const cleanBrief = (): RepoBrief | undefined => {
+    const b: RepoBrief = {
+      projectType: brief.projectType || undefined,
+      audience: brief.audience || undefined,
+      sections: brief.sections?.length ? brief.sections : undefined,
+      demoUrl: brief.demoUrl?.trim() || undefined,
+      docsUrl: brief.docsUrl?.trim() || undefined,
+      packageUrl: brief.packageUrl?.trim() || undefined,
+      tone: brief.tone || undefined,
+      length: brief.length || undefined,
+      emphasis: brief.emphasis?.trim() || undefined,
+    };
+    return Object.values(b).some((v) => v !== undefined) ? b : undefined;
+  };
+
   const onPick = (repo: RepoItem) => {
     setSetup({ id: repo.Id, fullName: repo.FullName });
-    setIntent("");
+    setBrief({});
     setModelId("");
+    setShowAdvanced(false);
     start.reset();
   };
 
   const onStart = () => {
     if (!setup) return;
     start.mutate(
-      { repoId: setup.id, intent, modelId: chosenModel || undefined },
+      { repoId: setup.id, brief: cleanBrief(), modelId: chosenModel || undefined },
       {
         onSuccess: (res) => {
           if (res.Data) {
@@ -215,7 +252,7 @@ export function RepoGenerateList() {
     );
   }
 
-  // --- Setup: intent + model for the chosen repo. ---
+  // --- Setup: structured brief + model for the chosen repo. ---
   if (setup) {
     return (
       <div className="space-y-4">
@@ -250,6 +287,25 @@ export function RepoGenerateList() {
               </div>
             </div>
 
+            {/* Core */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Project type">
+                <OptionSelect
+                  value={brief.projectType}
+                  onChange={(v) => set("projectType", v)}
+                  options={PROJECT_TYPES}
+                />
+              </Field>
+              <Field label="Primary audience">
+                <OptionSelect
+                  value={brief.audience}
+                  onChange={(v) => set("audience", v)}
+                  options={REPO_AUDIENCES}
+                />
+              </Field>
+            </div>
+
+            {/* Emphasis (free-text escape hatch) */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Anything to emphasize?{" "}
@@ -258,13 +314,80 @@ export function RepoGenerateList() {
                 </span>
               </label>
               <Textarea
-                value={intent}
-                onChange={(e) => setIntent(e.target.value)}
+                value={brief.emphasis ?? ""}
+                onChange={(e) => set("emphasis", e.target.value)}
                 placeholder={
                   'e.g. "Aimed at first-time contributors — highlight setup steps and the plugin architecture."'
                 }
-                className="min-h-24"
+                className="min-h-20"
               />
+            </div>
+
+            {/* Advanced options */}
+            <div className="border-t border-border pt-4">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced((s) => !s)}
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    showAdvanced ? "rotate-180" : ""
+                  }`}
+                />
+                Advanced options
+              </button>
+
+              {showAdvanced && (
+                <div className="mt-4 space-y-4">
+                  <Field label="Sections to include" hint="(default: we decide)">
+                    <ChipGroup
+                      options={REPO_SECTIONS}
+                      value={brief.sections ?? []}
+                      onChange={(v) => set("sections", v)}
+                    />
+                  </Field>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Tone">
+                      <OptionSelect
+                        value={brief.tone}
+                        onChange={(v) => set("tone", v)}
+                        options={TONES}
+                      />
+                    </Field>
+                    <Field label="Length">
+                      <OptionSelect
+                        value={brief.length}
+                        onChange={(v) => set("length", v)}
+                        options={LENGTHS}
+                      />
+                    </Field>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <Field label="Live demo URL">
+                      <Input
+                        value={brief.demoUrl ?? ""}
+                        onChange={(e) => set("demoUrl", e.target.value)}
+                        placeholder="https://…"
+                      />
+                    </Field>
+                    <Field label="Docs URL">
+                      <Input
+                        value={brief.docsUrl ?? ""}
+                        onChange={(e) => set("docsUrl", e.target.value)}
+                        placeholder="https://…"
+                      />
+                    </Field>
+                    <Field label="Package URL">
+                      <Input
+                        value={brief.packageUrl ?? ""}
+                        onChange={(e) => set("packageUrl", e.target.value)}
+                        placeholder="npm / PyPI / …"
+                      />
+                    </Field>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -295,7 +418,7 @@ export function RepoGenerateList() {
                 className="gap-1.5 bg-violet-600 text-white hover:bg-violet-700"
               >
                 <Sparkles className="h-4 w-4" />
-                {start.isPending ? "Starting…" : "Write the README"}
+                {start.isPending ? "Starting…" : "Compose the README"}
               </Button>
             </div>
 
@@ -358,7 +481,7 @@ export function RepoGenerateList() {
         <EmptyState
           icon={FolderGit2}
           title="No repositories found"
-          description="We didn't find any repositories on your GitHub account to narrate."
+          description="We didn't find any repositories on your GitHub account to compose."
         />
       </Card>
     );

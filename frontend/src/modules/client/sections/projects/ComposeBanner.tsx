@@ -7,9 +7,9 @@ import { useAccountName } from "@/lib/auth/account";
 
 /**
  * Prominent action above the repo list: read all repos + resume to (re)write the
- * profile README (the owner/owner repo). Opens the Narrate Yourself workspace.
+ * profile README (the owner/owner repo). Opens the Compose Your Profile workspace.
  */
-export function NarrateBanner() {
+export function ComposeBanner() {
   const name = useAccountName();
 
   return (
@@ -21,7 +21,7 @@ export function NarrateBanner() {
           </span>
           <div>
             <p className="font-semibold text-violet-900 dark:text-violet-100">
-              Narrate Yourself
+              Compose Your Profile
             </p>
             <p className="text-sm text-violet-800/80 dark:text-violet-200/80">
               Read all your repositories and your resume to write your profile
@@ -33,9 +33,9 @@ export function NarrateBanner() {
           asChild
           className="shrink-0 gap-1.5 bg-violet-600 text-white hover:bg-violet-700"
         >
-          <Link to="/customer/$name/narrate" params={{ name }}>
+          <Link to="/customer/$name/compose" params={{ name }}>
             <Sparkles className="h-4 w-4" />
-            Narrate Yourself
+            Compose Your Profile
           </Link>
         </Button>
       </CardContent>

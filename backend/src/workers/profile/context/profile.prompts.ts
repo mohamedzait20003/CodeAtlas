@@ -11,7 +11,7 @@ const AGENT_DIR = join(__dirname, '..', 'agent');
 const SHARED_DIR = join(__dirname, '..', '..', 'shared', 'agent');
 const assemble = makeAgentLoader(AGENT_DIR, SHARED_DIR);
 
-/** Profile ("Narrate Yourself") role prompts, assembled once at worker startup. */
+/** Profile ("Compose Your Profile") role prompts, assembled once at worker startup. */
 export const RESUME_ANALYST_PROMPT = assemble('resume-analyst.agent.md');
 export const REPO_ANALYST_PROMPT = assemble('repo-analyst.agent.md');
 export const PLANNER_PROMPT = assemble('planner.agent.md');

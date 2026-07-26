@@ -46,9 +46,9 @@ export function CurrentPlan() {
 
       <CardContent className="space-y-5 pt-5">
         <UsageMeter
-          label="Narrate Yourself this period"
-          used={Usage.NarrationsUsed}
-          limit={Usage.NarrationLimit}
+          label="Compose Your Profile this period"
+          used={Usage.CompositionsUsed}
+          limit={Usage.CompositionLimit}
         />
         <UsageMeter
           label="Repo READMEs this period"

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-/** Body for POST /narrations/:id/commit — the (edited) README markdown to push. */
-export class CommitNarrationDto {
+/** Body for POST /compositions/:id/commit — the (edited) README markdown to push. */
+export class CommitCompositionDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100_000)

@@ -15,7 +15,7 @@ import { ProfileReadmeAgentService } from './services/profile-readme-agent.servi
 import { ProfileGenerationRunner } from './services/profile-generation-runner.service';
 
 /**
- * "Narrate Yourself" (profile README) worker providers. The DB connection +
+ * "Compose Your Profile" (profile README) worker providers. The DB connection +
  * config come from the parent {@link WorkersModule}; this only registers the
  * repositories + services it uses. Repo-README generation lives in its own
  * {@link RepoWorkerModule}.

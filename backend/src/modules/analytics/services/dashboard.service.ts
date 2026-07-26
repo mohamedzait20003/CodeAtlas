@@ -92,8 +92,8 @@ export class DashboardService {
         Status: subscription?.status ?? 'active',
       },
       Usage: {
-        NarrationsUsed: usageRow?.profileNarrationsUsed ?? 0,
-        NarrationLimit: plan?.features.profileNarrations ?? 1,
+        CompositionsUsed: usageRow?.profileCompositionsUsed ?? 0,
+        CompositionLimit: plan?.features.profileCompositions ?? 1,
         GenerationsUsed: usageRow?.generationsUsed ?? 0,
         GenerationLimit: plan?.generationLimit ?? 5,
         ReposAnalyzed: reposAnalyzed,

@@ -20,15 +20,16 @@ import { GithubReposService } from '@/modules/generations/services/github-repos.
 import { GithubCommitService } from '@/modules/generations/services/github-commit.service';
 import { RepoGenerationFactory } from '@/modules/generations/factories/repo-generation.factory';
 import type { RepoItem } from '@/modules/generations/dto/repo.dto';
-import type { StartNarrationDto } from '@/modules/generations/dto/start-narration.dto';
+import type { StartRepoCompositionDto } from '@/modules/generations/dto/start-repo-composition.dto';
+import { composeRepoBrief } from '@/modules/generations/dto/brief.dto';
 import type {
   CommitView,
-  NarrationStartView,
-  NarrationView,
-} from '@/modules/generations/dto/narration.dto';
+  CompositionStartView,
+  CompositionView,
+} from '@/modules/generations/dto/composition.dto';
 
 /**
- * "Narrate about Repos" lifecycle: resolves the target repo (find-or-create local
+ * "Compose a README" lifecycle: resolves the target repo (find-or-create local
  * row) + the user's plan/model, records a REPO_README generation and enqueues it
  * via {@link RepoGenerationFactory} (its own worker), reports status for polling,
  * and commits the (edited) README to the repo. The repo-generation quota is
@@ -50,8 +51,8 @@ export class RepoGenerationService {
   async start(
     userId: string,
     githubRepoId: string,
-    dto: StartNarrationDto,
-  ): Promise<NarrationStartView> {
+    dto: StartRepoCompositionDto,
+  ): Promise<CompositionStartView> {
     const item = await this.repos.findById(userId, githubRepoId);
     if (!item) throw new NotFoundException('Repository not found.');
 
@@ -66,7 +67,7 @@ export class RepoGenerationService {
         repoId: repo.id,
         status: GenerationStatus.QUEUED,
         phase: 'queued',
-        intent: dto.intent ?? null,
+        intent: composeRepoBrief(dto.brief),
         aiModelId: model.id,
         provider: model.provider,
         model: model.modelId,
@@ -78,7 +79,7 @@ export class RepoGenerationService {
     return { Id: generation.id };
   }
 
-  async status(userId: string, id: string): Promise<NarrationView> {
+  async status(userId: string, id: string): Promise<CompositionView> {
     const gen = await this.generations.findOne({
       where: { id, userId, kind: GenerationKind.REPO_README },
     });

@@ -6,7 +6,7 @@ import useRoleGuard from "@/lib/guards/roleGuard";
 
 import Overview from "./pages/Overview";
 import Projects from "./pages/Projects";
-import Narrate from "./pages/Narrate";
+import Compose from "./pages/Compose";
 
 /**
  * Customer dashboard at /customer/$name/* (Overview + Projects), for an
@@ -34,12 +34,12 @@ const projectsRoute = createRoute({
   ssr: false,
 });
 
-const narrateRoute = createRoute({
+const composeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/customer/$name/narrate",
-  component: Narrate,
+  path: "/customer/$name/compose",
+  component: Compose,
   beforeLoad: guard,
   ssr: false,
 });
 
-export const clientRoutes = [overviewRoute, projectsRoute, narrateRoute];
+export const clientRoutes = [overviewRoute, projectsRoute, composeRoute];

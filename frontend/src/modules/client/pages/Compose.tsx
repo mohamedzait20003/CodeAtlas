@@ -1,11 +1,20 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Cpu, Feather, Github, ServerCrash, Sparkles, Wand2 } from "lucide-react";
+import {
+  ChevronDown,
+  Cpu,
+  Feather,
+  Github,
+  ServerCrash,
+  Sparkles,
+  Wand2,
+} from "lucide-react";
 
 import { PageIntro } from "@/modules/client/components/PageIntro";
 import { EmptyState } from "@/modules/client/components/EmptyState";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
 import { Textarea } from "@/common/components/ui/textarea";
 import {
   Select,
@@ -18,42 +27,75 @@ import {
 import { useStore } from "@/store";
 import { useAccountName } from "@/lib/auth/account";
 import {
-  useCommitNarration,
-  useNarration,
-  useStartNarration,
+  useCommitComposition,
+  useComposition,
+  useStartComposition,
   useTailorIntent,
-} from "@/lib/hooks/useNarration";
+} from "@/lib/hooks/useComposition";
 import { useAiModels } from "@/lib/hooks/useAiModels";
-import { PhaseProgress } from "@/modules/client/sections/narrate/PhaseProgress";
-import { ReadmeEditor } from "@/modules/client/sections/narrate/ReadmeEditor";
+import type { ProfileBrief } from "@/lib/models/compositionModel";
+import {
+  LENGTHS,
+  PROFILE_AUDIENCES,
+  PROFILE_SECTIONS,
+  SENIORITIES,
+  TONES,
+} from "@/lib/models/briefOptions";
+import { PhaseProgress } from "@/modules/client/sections/compose/PhaseProgress";
+import { ReadmeEditor } from "@/modules/client/sections/compose/ReadmeEditor";
+import {
+  ChipGroup,
+  Field,
+  OptionSelect,
+} from "@/modules/client/sections/compose/BriefControls";
 
-export default function Narrate() {
+export default function Compose() {
   const linked = useStore((s) => s.userData?.githubLinked);
   const name = useAccountName();
-  const [intent, setIntent] = useState("");
+  const [brief, setBrief] = useState<ProfileBrief>({});
   const [modelId, setModelId] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [jobId, setJobId] = useState<string | null>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [committedUrl, setCommittedUrl] = useState<string | null>(null);
 
   const { data: models = [] } = useAiModels();
-  const start = useStartNarration();
+  const start = useStartComposition();
   const tailor = useTailorIntent();
-  const commit = useCommitNarration();
-  const { data: narration } = useNarration(jobId);
+  const commit = useCommitComposition();
+  const { data: composition } = useComposition(jobId);
 
-  const defaultModelId = models.find((m) => m.IsDefault)?.Id ?? models[0]?.Id ?? "";
+  const defaultModelId =
+    models.find((m) => m.IsDefault)?.Id ?? models[0]?.Id ?? "";
   const chosenModel = modelId || defaultModelId;
 
-  const status = narration?.Status;
+  const status = composition?.Status;
   const hasJob = Boolean(jobId);
   const running = hasJob && status !== "completed" && status !== "failed";
   const failed = status === "failed";
   const completed = status === "completed";
 
+  const set = <K extends keyof ProfileBrief>(k: K, v: ProfileBrief[K]) =>
+    setBrief((b) => ({ ...b, [k]: v }));
+
+  /** Trim to the fields the user actually set; undefined if the brief is empty. */
+  const cleanBrief = (): ProfileBrief | undefined => {
+    const b: ProfileBrief = {
+      role: brief.role?.trim() || undefined,
+      seniority: brief.seniority || undefined,
+      audience: brief.audience || undefined,
+      jobDescription: brief.jobDescription?.trim() || undefined,
+      tone: brief.tone || undefined,
+      length: brief.length || undefined,
+      sections: brief.sections?.length ? brief.sections : undefined,
+      emphasis: brief.emphasis?.trim() || undefined,
+    };
+    return Object.values(b).some((v) => v !== undefined) ? b : undefined;
+  };
+
   const onStart = () =>
     start.mutate(
-      { intent, modelId: chosenModel || undefined },
+      { brief: cleanBrief(), modelId: chosenModel || undefined },
       {
         onSuccess: (res) => {
           if (res.Data) {
@@ -73,7 +115,7 @@ export default function Narrate() {
 
   const onCommit = () => {
     if (!jobId) return;
-    const content = draft ?? narration?.GeneratedMd ?? "";
+    const content = draft ?? composition?.GeneratedMd ?? "";
     if (!content.trim()) return;
     commit.mutate(
       { id: jobId, content },
@@ -82,11 +124,11 @@ export default function Narrate() {
   };
 
   const onTailor = () => {
-    const rough = intent.trim();
+    const rough = brief.emphasis?.trim();
     if (!rough) return;
     tailor.mutate(rough, {
       onSuccess: (res) => {
-        if (res.Data?.Text) setIntent(res.Data.Text);
+        if (res.Data?.Text) set("emphasis", res.Data.Text);
       },
     });
   };
@@ -95,7 +137,7 @@ export default function Narrate() {
     return (
       <div className="space-y-6">
         <PageIntro
-          title="Narrate Yourself"
+          title="Compose Your Profile"
           description="Turn your repositories and résumé into a profile README that reads like you wrote it."
         />
         <Card className="py-0">
@@ -122,7 +164,7 @@ export default function Narrate() {
   return (
     <div className="space-y-6">
       <PageIntro
-        title="Narrate Yourself"
+        title="Compose Your Profile"
         description="Turn your repositories and résumé into a profile README that reads like you wrote it — reviewed and committed on your terms."
       />
 
@@ -138,13 +180,39 @@ export default function Narrate() {
                   Let's write your story
                 </p>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  We read your projects and résumé, then draft a profile README
-                  that sounds like you — you review and edit every word before it
+                  Tell us who this is for and we'll design the README around it —
+                  everything is optional, and you review every word before it
                   ships.
                 </p>
               </div>
             </div>
 
+            {/* Core targeting */}
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field label="Target role" hint="(optional)">
+                <Input
+                  value={brief.role ?? ""}
+                  onChange={(e) => set("role", e.target.value)}
+                  placeholder="e.g. Backend Engineer"
+                />
+              </Field>
+              <Field label="Seniority">
+                <OptionSelect
+                  value={brief.seniority}
+                  onChange={(v) => set("seniority", v)}
+                  options={SENIORITIES}
+                />
+              </Field>
+              <Field label="Primary audience">
+                <OptionSelect
+                  value={brief.audience}
+                  onChange={(v) => set("audience", v)}
+                  options={PROFILE_AUDIENCES}
+                />
+              </Field>
+            </div>
+
+            {/* Emphasis (free-text escape hatch) + AI polish */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Anything you'd like to lead with?{" "}
@@ -153,12 +221,12 @@ export default function Narrate() {
                 </span>
               </label>
               <Textarea
-                value={intent}
-                onChange={(e) => setIntent(e.target.value)}
+                value={brief.emphasis ?? ""}
+                onChange={(e) => set("emphasis", e.target.value)}
                 placeholder={
-                  'e.g. "Lead with my backend & AI-agent work — confident, concise, and recruiter-friendly."'
+                  'e.g. "Lead with my backend & AI-agent work — confident and recruiter-friendly."'
                 }
-                className="min-h-24"
+                className="min-h-20"
               />
               <div className="flex justify-end">
                 <Button
@@ -166,7 +234,7 @@ export default function Narrate() {
                   size="sm"
                   className="gap-1.5 text-violet-600 hover:text-violet-700"
                   onClick={onTailor}
-                  disabled={!intent.trim() || tailor.isPending}
+                  disabled={!brief.emphasis?.trim() || tailor.isPending}
                 >
                   <Wand2 className="h-3.5 w-3.5" />
                   {tailor.isPending ? "Polishing…" : "Polish with AI"}
@@ -174,6 +242,62 @@ export default function Narrate() {
               </div>
             </div>
 
+            {/* Advanced options */}
+            <div className="border-t border-border pt-4">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced((s) => !s)}
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    showAdvanced ? "rotate-180" : ""
+                  }`}
+                />
+                Advanced options
+              </button>
+
+              {showAdvanced && (
+                <div className="mt-4 space-y-4">
+                  <Field
+                    label="Target job description"
+                    hint="(paste one to tailor keywords & skills)"
+                  >
+                    <Textarea
+                      value={brief.jobDescription ?? ""}
+                      onChange={(e) => set("jobDescription", e.target.value)}
+                      placeholder="Paste the JD you're targeting — we'll mirror its keywords where your résumé supports them."
+                      className="min-h-24"
+                    />
+                  </Field>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Tone">
+                      <OptionSelect
+                        value={brief.tone}
+                        onChange={(v) => set("tone", v)}
+                        options={TONES}
+                      />
+                    </Field>
+                    <Field label="Length">
+                      <OptionSelect
+                        value={brief.length}
+                        onChange={(v) => set("length", v)}
+                        options={LENGTHS}
+                      />
+                    </Field>
+                  </div>
+                  <Field label="Sections to include" hint="(default: we decide)">
+                    <ChipGroup
+                      options={PROFILE_SECTIONS}
+                      value={brief.sections ?? []}
+                      onChange={(v) => set("sections", v)}
+                    />
+                  </Field>
+                </div>
+              )}
+            </div>
+
+            {/* Model + start */}
             <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2">
                 <Cpu className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -202,7 +326,7 @@ export default function Narrate() {
                 className="gap-1.5 bg-violet-600 text-white hover:bg-violet-700"
               >
                 <Sparkles className="h-4 w-4" />
-                {start.isPending ? "Starting…" : "Write my README"}
+                {start.isPending ? "Starting…" : "Compose my README"}
               </Button>
             </div>
 
@@ -217,9 +341,9 @@ export default function Narrate() {
 
       {running && (
         <PhaseProgress
-          phase={narration?.Phase ?? null}
+          phase={composition?.Phase ?? null}
           status={status ?? "queued"}
-          model={narration?.Model ?? null}
+          model={composition?.Model ?? null}
         />
       )}
 
@@ -229,7 +353,7 @@ export default function Narrate() {
             icon={ServerCrash}
             title="That didn't go through"
             description={
-              narration?.Error ?? "Something went wrong. Please try again."
+              composition?.Error ?? "Something went wrong. Please try again."
             }
             action={<Button onClick={onStartOver}>Try again</Button>}
           />
@@ -238,12 +362,12 @@ export default function Narrate() {
 
       {completed && (
         <ReadmeEditor
-          value={draft ?? narration?.GeneratedMd ?? ""}
+          value={draft ?? composition?.GeneratedMd ?? ""}
           onChange={(v) => {
             setDraft(v);
             setCommittedUrl(null);
           }}
-          model={narration?.Model ?? null}
+          model={composition?.Model ?? null}
           onStartOver={onStartOver}
           onCommit={onCommit}
           committing={commit.isPending}

@@ -9,7 +9,7 @@ export function CtaSection() {
       <div className="mx-auto max-w-2xl text-center">
         <FileText className="mx-auto mb-4 h-10 w-10 text-violet-500 opacity-80" />
         <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Ready to narrate your code?
+          Ready to compose your code?
         </h2>
         <p className="mt-4 text-muted-foreground">
           Join developers who ship READMEs they're actually proud of.

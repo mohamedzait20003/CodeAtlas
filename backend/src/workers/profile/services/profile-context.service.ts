@@ -9,7 +9,7 @@ import { GithubReaderService } from './github-reader.service';
 import type { ProfileContext } from '../context/profile-context';
 
 /**
- * Assembles everything the "Narrate Yourself" agent reads: the user's latest
+ * Assembles everything the "Compose Your Profile" agent reads: the user's latest
  * résumé text, their current profile README, and their top project repos.
  * Each source degrades independently — a missing résumé or GitHub link just
  * yields nulls rather than failing the run.

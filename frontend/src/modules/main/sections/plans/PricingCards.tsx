@@ -12,7 +12,7 @@ const PLANS = [
     features: [
       "3 repos",
       "5 repo READMEs / month",
-      "Narrate Yourself 1× / month",
+      "Compose Your Profile 1× / month",
       "1 saved resume",
       "Economy model",
       "Manual copy or PR",
@@ -29,7 +29,7 @@ const PLANS = [
     features: [
       "25 repos",
       "75 repo READMEs / month",
-      "Narrate Yourself 4× / month",
+      "Compose Your Profile 4× / month",
       "5 saved resumes",
       "Standard model",
       "Auto PR",
@@ -47,7 +47,7 @@ const PLANS = [
     features: [
       "Unlimited repos",
       "750 repo READMEs / month",
-      "Unlimited Narrate Yourself",
+      "Unlimited Compose Your Profile",
       "Unlimited resumes",
       "Premium model",
       "Direct push",

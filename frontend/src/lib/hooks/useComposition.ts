@@ -1,17 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
-  commitNarration,
-  getNarration,
-  startNarration,
+  commitComposition,
+  getComposition,
+  startComposition,
   tailorIntent,
-} from "@/lib/handlers/narrationHandlers";
+} from "@/lib/handlers/compositionHandlers";
+import type { ProfileBrief } from "@/lib/models/compositionModel";
 
-/** Polls a narration until it reaches a terminal state (completed / failed). */
-export function useNarration(id: string | null) {
+/** Polls a composition until it reaches a terminal state (completed / failed). */
+export function useComposition(id: string | null) {
   return useQuery({
-    queryKey: ["narration", id],
-    queryFn: () => getNarration(id as string),
+    queryKey: ["composition", id],
+    queryFn: () => getComposition(id as string),
     enabled: Boolean(id),
     select: (res) => res.Data,
     refetchInterval: (query) => {
@@ -21,13 +22,11 @@ export function useNarration(id: string | null) {
   });
 }
 
-export function useStartNarration() {
+export function useStartComposition() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (vars: { intent?: string; modelId?: string }) =>
-      startNarration(vars.intent, vars.modelId),
+    mutationFn: (vars: { brief?: ProfileBrief; modelId?: string }) => startComposition(vars.brief, vars.modelId),
     onSuccess: () => {
-      // Usage (profile-narration quota) may have changed.
       void qc.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
@@ -37,9 +36,9 @@ export function useTailorIntent() {
   return useMutation({ mutationFn: (draft: string) => tailorIntent(draft) });
 }
 
-export function useCommitNarration() {
+export function useCommitComposition() {
   return useMutation({
     mutationFn: ({ id, content }: { id: string; content: string }) =>
-      commitNarration(id, content),
+      commitComposition(id, content),
   });
 }

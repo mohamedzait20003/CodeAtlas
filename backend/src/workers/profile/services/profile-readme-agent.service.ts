@@ -55,7 +55,7 @@ const ProfileState = Annotation.Root({
 type ProfileStateType = typeof ProfileState.State;
 
 /**
- * The "Narrate Yourself" agent: a LangGraph state machine that analyzes the
+ * The "Compose Your Profile" agent: a LangGraph state machine that analyzes the
  * sources, plans, drafts, and self-critiques the profile README (bounded revise
  * loop), on the provider/model resolved from the user's plan/selection.
  *

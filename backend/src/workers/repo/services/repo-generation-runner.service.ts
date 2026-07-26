@@ -16,7 +16,7 @@ import { RepoContentService } from './repo-content.service';
 import { RepoReadmeAgentService } from './repo-readme-agent.service';
 
 /**
- * "Narrate about Repos" worker: reads one target repository's content and runs
+ * "Compose a README" worker: reads one target repository's content and runs
  * the repo agent to produce its README. Consumes the `repo-generation` queue.
  * Shared job lifecycle lives in {@link GenerationRunner}.
  */

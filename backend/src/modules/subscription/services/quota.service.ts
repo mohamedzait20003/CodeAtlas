@@ -7,7 +7,7 @@ import { Plan } from '@/modules/subscription/entities/plan.entity';
 import { PlanService } from '@/modules/subscription/services/plan.service';
 import { QuotaKind } from '@/shared/Domain/enums/quota-kind.enum';
 
-type UsageField = 'profileNarrationsUsed' | 'generationsUsed';
+type UsageField = 'profileCompositionsUsed' | 'generationsUsed';
 
 const METRICS: Record<
   QuotaKind,
@@ -17,10 +17,10 @@ const METRICS: Record<
     limit: (plan: Plan) => number | undefined;
   }
 > = {
-  [QuotaKind.PROFILE_NARRATION]: {
-    label: 'Narrate Yourself',
-    field: 'profileNarrationsUsed',
-    limit: (plan) => plan.features.profileNarrations,
+  [QuotaKind.PROFILE_COMPOSITION]: {
+    label: 'Compose Your Profile',
+    field: 'profileCompositionsUsed',
+    limit: (plan) => plan.features.profileCompositions,
   },
   [QuotaKind.REPO_GENERATION]: {
     label: 'README generation',
@@ -63,7 +63,7 @@ export class QuotaService {
         userId,
         periodStart,
         generationsUsed: 0,
-        profileNarrationsUsed: 0,
+        profileCompositionsUsed: 0,
       });
 
     if (limit !== -1 && row[metric.field] >= limit) {

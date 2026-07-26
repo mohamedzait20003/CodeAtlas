@@ -1,5 +1,5 @@
 import { PageIntro } from "@/modules/client/components/PageIntro";
-import { NarrateBanner } from "../sections/projects/NarrateBanner";
+import { ComposeBanner } from "../sections/projects/ComposeBanner";
 import { RepoGenerateList } from "../sections/projects/RepoGenerateList";
 import { GenerationsTable } from "../sections/generations/GenerationsTable";
 import { placeholderGenerations } from "../placeholder";
@@ -9,10 +9,10 @@ export default function Projects() {
     <div className="space-y-6">
       <PageIntro
         title="Projects"
-        description="Generate a README for any repository, or narrate your whole profile."
+        description="Generate a README for any repository, or compose your whole profile."
       />
 
-      <NarrateBanner />
+      <ComposeBanner />
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-foreground">

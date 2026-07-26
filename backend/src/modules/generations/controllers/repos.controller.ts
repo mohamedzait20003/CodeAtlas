@@ -18,14 +18,14 @@ import type { PagedResult } from '@/shared/Common/paged-result';
 import { GithubReposService } from '@/modules/generations/services/github-repos.service';
 import { RepoGenerationService } from '@/modules/generations/services/repo-generation.service';
 import { ListReposQuery } from '@/modules/generations/dto/list-repos.query';
-import { StartNarrationDto } from '@/modules/generations/dto/start-narration.dto';
-import { CommitNarrationDto } from '@/modules/generations/dto/commit-narration.dto';
+import { StartRepoCompositionDto } from '@/modules/generations/dto/start-repo-composition.dto';
+import { CommitCompositionDto } from '@/modules/generations/dto/commit-composition.dto';
 import type { RepoItem } from '@/modules/generations/dto/repo.dto';
 import type {
   CommitView,
-  NarrationStartView,
-  NarrationView,
-} from '@/modules/generations/dto/narration.dto';
+  CompositionStartView,
+  CompositionView,
+} from '@/modules/generations/dto/composition.dto';
 
 @Controller('repos')
 export class ReposController {
@@ -47,15 +47,15 @@ export class ReposController {
     return this.repos.list(user.userId, query.page, query.pageSize);
   }
 
-  /** Start a "Narrate about Repos" job for one repo (`id` = its GitHub repo id). */
+  /** Start a "Compose a README" job for one repo (`id` = its GitHub repo id). */
   @Quota(QuotaKind.REPO_GENERATION)
   @Roles(UserRole.USER)
   @Post(':id/generate')
   generate(
     @CurrentUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() dto: StartNarrationDto,
-  ): Promise<NarrationStartView> {
+    @Body() dto: StartRepoCompositionDto,
+  ): Promise<CompositionStartView> {
     return this.repoGen.start(user.userId, id, dto);
   }
 
@@ -65,7 +65,7 @@ export class ReposController {
   status(
     @CurrentUser() user: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<NarrationView> {
+  ): Promise<CompositionView> {
     return this.repoGen.status(user.userId, id);
   }
 
@@ -75,7 +75,7 @@ export class ReposController {
   commit(
     @CurrentUser() user: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: CommitNarrationDto,
+    @Body() dto: CommitCompositionDto,
   ): Promise<CommitView> {
     return this.repoGen.commit(user.userId, id, dto.content);
   }

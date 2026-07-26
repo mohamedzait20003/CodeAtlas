@@ -1,10 +1,10 @@
 ---
-id: narrate-profile
-title: Narrate Yourself — profile README workflow
+id: compose-profile
+title: Compose Your Profile — profile README workflow
 engine: langgraph
 max_revisions: 2
 ---
-The "Narrate Yourself" agent is a LangGraph state machine with three roles and a
+The "Compose Your Profile" agent is a LangGraph state machine with three roles and a
 bounded revise loop:
 
 ```

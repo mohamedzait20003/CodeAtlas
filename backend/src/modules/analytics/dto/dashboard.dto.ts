@@ -7,10 +7,10 @@ export interface DashboardPlan {
 }
 
 export interface DashboardUsage {
-  /** "Narrate Yourself" profile-README runs used this period (enforced by @Quota). */
-  NarrationsUsed: number;
+  /** "Compose Your Profile" profile-README runs used this period (enforced by @Quota). */
+  CompositionsUsed: number;
   /** -1 = unlimited. */
-  NarrationLimit: number;
+  CompositionLimit: number;
   GenerationsUsed: number;
   /** -1 = unlimited. */
   GenerationLimit: number;

@@ -46,7 +46,7 @@ const RepoState = Annotation.Root({
 type RepoStateType = typeof RepoState.State;
 
 /**
- * The "Narrate about Repos" agent: a focused write → review loop (bounded revise)
+ * The "Compose a README" agent: a focused write → review loop (bounded revise)
  * that generates one repository's README from its content, on the provider/model
  * resolved from the user's plan/selection.
  *

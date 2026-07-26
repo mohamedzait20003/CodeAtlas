@@ -5,6 +5,7 @@ import {
   getRepoGeneration,
   startRepoGeneration,
 } from "@/lib/handlers/repoHandlers";
+import type { RepoBrief } from "@/lib/models/compositionModel";
 
 /** Polls a repo-README generation until it reaches a terminal state. */
 export function useRepoGeneration(id: string | null) {
@@ -23,8 +24,8 @@ export function useRepoGeneration(id: string | null) {
 export function useStartRepoGeneration() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (vars: { repoId: string; intent?: string; modelId?: string }) =>
-      startRepoGeneration(vars.repoId, vars.intent, vars.modelId),
+    mutationFn: (vars: { repoId: string; brief?: RepoBrief; modelId?: string }) =>
+      startRepoGeneration(vars.repoId, vars.brief, vars.modelId),
     onSuccess: () => {
       // Usage (repo-generation quota) may have changed.
       void qc.invalidateQueries({ queryKey: ["dashboard"] });

@@ -19,9 +19,9 @@ import { QuotaService } from '@/modules/subscription/services/quota.service';
 import { ReposController } from '@/modules/generations/controllers/repos.controller';
 import { GithubReposService } from '@/modules/generations/services/github-repos.service';
 import { RepoGenerationService } from '@/modules/generations/services/repo-generation.service';
-import { NarrationController } from '@/modules/generations/controllers/narration.controller';
-import { NarrationService } from '@/modules/generations/services/narration.service';
-import { NarrationTailorService } from '@/modules/generations/services/narration-tailor.service';
+import { CompositionController } from '@/modules/generations/controllers/composition.controller';
+import { CompositionService } from '@/modules/generations/services/composition.service';
+import { CompositionTailorService } from '@/modules/generations/services/composition-tailor.service';
 import { GithubCommitService } from '@/modules/generations/services/github-commit.service';
 import { ProfileGenerationFactory } from '@/modules/generations/factories/profile-generation.factory';
 import { RepoGenerationFactory } from '@/modules/generations/factories/repo-generation.factory';
@@ -29,8 +29,8 @@ import { AiModelsController } from '@/modules/generations/controllers/ai-models.
 import { AiModelsService } from '@/modules/generations/services/ai-models.service';
 
 /**
- * Generation module — repo listing + "Narrate Yourself" (profile README). The
- * heavy agentic job runs in the narration worker; this side enqueues + reports.
+ * Generation module — repo listing + "Compose Your Profile" (profile README). The
+ * heavy agentic job runs in the composition worker; this side enqueues + reports.
  */
 @Module({
   imports: [
@@ -46,12 +46,12 @@ import { AiModelsService } from '@/modules/generations/services/ai-models.servic
     CacheModule.register({ ttl: 120_000 }),
     IdentityModule,
   ],
-  controllers: [ReposController, NarrationController, AiModelsController],
+  controllers: [ReposController, CompositionController, AiModelsController],
   providers: [
     GithubReposService,
     RepoGenerationService,
-    NarrationService,
-    NarrationTailorService,
+    CompositionService,
+    CompositionTailorService,
     GithubCommitService,
     ProfileGenerationFactory,
     RepoGenerationFactory,

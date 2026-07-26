@@ -8,7 +8,7 @@ const AGENT_DIR = join(__dirname, '..', 'agent');
 const SHARED_DIR = join(__dirname, '..', '..', 'shared', 'agent');
 const assemble = makeAgentLoader(AGENT_DIR, SHARED_DIR);
 
-/** Repo ("Narrate about Repos") role prompts, assembled once at worker startup. */
+/** Repo ("Compose a README") role prompts, assembled once at worker startup. */
 export const REPO_WRITER_PROMPT = assemble('repo-writer.agent.md');
 export const REPO_REVIEWER_PROMPT = assemble('repo-reviewer.agent.md');
 

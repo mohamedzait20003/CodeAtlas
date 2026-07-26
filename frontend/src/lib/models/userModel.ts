@@ -7,8 +7,8 @@ export interface PlanFeatures {
   bulkGenerate: boolean;
   directPush: boolean;
   watermark: boolean;
-  /** Monthly "Narrate Yourself" runs (profile README). -1 = unlimited */
-  profileNarrations: number;
+  /** Monthly "Compose Your Profile" runs (profile README). -1 = unlimited */
+  profileCompositions: number;
   /** 0 = none, -1 = unlimited */
   customTemplates: number;
   /** -1 = unlimited */

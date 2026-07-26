@@ -77,7 +77,7 @@ export default () => ({
   },
 
   llm: {
-    /** Primary provider for now — the narration agent runs on Gemini. */
+    /** Primary provider for now — the composition agent runs on Gemini. */
     googleApiKey: process.env.GOOGLE_API_KEY ?? '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? '',
     openaiApiKey: process.env.OPENAI_API_KEY ?? '',

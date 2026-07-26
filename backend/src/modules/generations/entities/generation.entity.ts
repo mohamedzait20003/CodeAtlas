@@ -25,8 +25,8 @@ export class Generation {
   profile: any;
 
   /**
-   * What was narrated: a single repo's README ("Narrate about Repos") or the
-   * profile README aggregated from all repos + résumé ("Narrate Yourself").
+   * What was composed: a single repo's README ("Compose a README") or the
+   * profile README aggregated from all repos + résumé ("Compose Your Profile").
    */
   @Column({
     type: 'enum',
@@ -50,7 +50,7 @@ export class Generation {
   @JoinColumn({ name: 'resume_id' })
   resume: any;
 
-  /** The user's steering description ("Narrate Yourself" intent). */
+  /** The user's steering description ("Compose Your Profile" intent). */
   @Column({ type: 'text', nullable: true })
   intent: string | null;
 

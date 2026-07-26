@@ -13,7 +13,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/common/components/ui/card";
 import { Progress } from "@/common/components/ui/progress";
-import type { NarrationStatus } from "@/lib/models/narrationModel";
+import type { CompositionStatus } from "@/lib/models/compositionModel";
 
 export type Step = {
   key: string;
@@ -64,7 +64,7 @@ export function PhaseProgress({
   footnote = "Nothing is published yet. When the draft is ready you'll review and edit every word before it's committed to your profile.",
 }: {
   phase: string | null;
-  status: NarrationStatus;
+  status: CompositionStatus;
   model?: string | null;
   /** Step list for this flow (defaults to the 4-step profile pipeline). */
   steps?: Step[];

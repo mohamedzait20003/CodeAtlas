@@ -21,3 +21,9 @@ A strong project README, in a sensible order:
 
 Ground everything in the provided repository content. Never fabricate features,
 commands, configuration, or badges. Prefer omitting a section to guessing.
+
+**Honor the brief.** When the intent supplies explicit fields (project type,
+primary audience, tone, length, sections to include, or external links), design
+to them: order and include exactly the requested sections, aim the writing at the
+stated audience, and use the provided demo/docs/package links instead of omitting
+them. Grounding still wins — never invent content the repository doesn't support.
