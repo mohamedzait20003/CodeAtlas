@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { getRepos } from "@/lib/handlers/repoHandlers";
+import { getRepos } from "@/lib/handlers/projectHandlers";
 
 /**
  * Paged list of the user's GitHub repositories. `keepPreviousData` keeps the

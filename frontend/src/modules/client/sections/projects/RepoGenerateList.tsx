@@ -44,11 +44,11 @@ import { useAccountName } from "@/lib/auth/account";
 import { useRepos } from "@/lib/hooks/useRepos";
 import { useAiModels } from "@/lib/hooks/useAiModels";
 import {
-  useCommitRepoGeneration,
-  useRepoGeneration,
-  useStartRepoGeneration,
-} from "@/lib/hooks/useRepoGeneration";
-import type { RepoBrief } from "@/lib/models/compositionModel";
+  useCommitProjectComposition,
+  useProjectComposition,
+  useStartProjectComposition,
+} from "@/lib/hooks/useProjectComposition";
+import type { RepoBrief } from "@/lib/models/projectModel";
 import {
   LENGTHS,
   PROJECT_TYPES,
@@ -121,9 +121,9 @@ export function RepoGenerateList() {
 
   const { data, isLoading, isError, isPlaceholderData } = useRepos(page);
   const { data: models = [] } = useAiModels();
-  const start = useStartRepoGeneration();
-  const commit = useCommitRepoGeneration();
-  const { data: generation } = useRepoGeneration(gen?.id ?? null);
+  const start = useStartProjectComposition();
+  const commit = useCommitProjectComposition();
+  const { data: generation } = useProjectComposition(gen?.id ?? null);
 
   const defaultModelId =
     models.find((m) => m.IsDefault)?.Id ?? models[0]?.Id ?? "";

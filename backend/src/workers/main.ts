@@ -6,11 +6,11 @@ import { Redis, type RedisOptions } from 'ioredis';
 import {
   PROFILE_GENERATION_QUEUE,
   type ProfileGenerationJob,
-} from '@/modules/generations/factories/profile-generation.factory';
+} from '@/modules/persona/factories/persona-composition.factory';
 import {
   REPO_GENERATION_QUEUE,
   type RepoGenerationJob,
-} from '@/modules/generations/factories/repo-generation.factory';
+} from '@/modules/project/factories/project-composition.factory';
 import { WorkersModule } from './workers.module';
 import { RendererService } from './mail/services/renderer.service';
 import { SenderService } from './mail/services/sender.service';

@@ -23,11 +23,16 @@ const MARKETING_NAV = [
 /** Client dashboard sections shown when on a /customer route. */
 type CustomerNavItem = {
   label: string;
-  to: "/customer/$name" | "/customer/$name/projects";
+  to:
+    | "/customer/$name"
+    | "/customer/$name/compose"
+    | "/customer/$name/projects";
   exact?: boolean;
 };
+
 const CUSTOMER_NAV: CustomerNavItem[] = [
   { label: "Overview", to: "/customer/$name", exact: true },
+  { label: "Compose", to: "/customer/$name/compose" },
   { label: "Projects", to: "/customer/$name/projects" },
 ];
 

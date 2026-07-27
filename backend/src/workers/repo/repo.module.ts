@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { Generation } from '@/modules/generations/entities/generation.entity';
-import { Repo } from '@/modules/generations/entities/repo.entity';
+import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
+import { Repo } from '@/modules/project/entities/repo.entity';
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { User } from '@/modules/identity/entities/user.entity';
 import { EncryptionService } from '@/modules/identity/services/encryption.service';
@@ -18,7 +18,9 @@ import { RepoGenerationRunner } from './services/repo-generation-runner.service'
  * parent {@link WorkersModule}.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Generation, Repo, UsageCounter, User])],
+  imports: [
+    TypeOrmModule.forFeature([ProjectComposition, Repo, UsageCounter, User]),
+  ],
   providers: [
     RepoGenerationRunner,
     RepoContentService,

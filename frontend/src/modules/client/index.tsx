@@ -5,8 +5,8 @@ import useAuthGuard from "@/lib/guards/authGuard";
 import useRoleGuard from "@/lib/guards/roleGuard";
 
 import Overview from "./pages/Overview";
-import Projects from "./pages/Projects";
-import Compose from "./pages/Compose";
+import ProjectCompose from "./pages/ProjectCompose";
+import PersonaCompose from "./pages/PersonaCompose";
 
 /**
  * Customer dashboard at /customer/$name/* (Overview + Projects), for an
@@ -29,7 +29,7 @@ const overviewRoute = createRoute({
 const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/customer/$name/projects",
-  component: Projects,
+  component: ProjectCompose,
   beforeLoad: guard,
   ssr: false,
 });
@@ -37,7 +37,7 @@ const projectsRoute = createRoute({
 const composeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/customer/$name/compose",
-  component: Compose,
+  component: PersonaCompose,
   beforeLoad: guard,
   ssr: false,
 });

@@ -3,7 +3,6 @@ export * from '@/shared/Domain/enums/plan-tier.enum';
 export * from '@/shared/Domain/enums/model-tier.enum';
 export * from '@/shared/Domain/enums/subscription-status.enum';
 export * from '@/shared/Domain/enums/generation-status.enum';
-export * from '@/shared/Domain/enums/generation-kind.enum';
 export * from '@/shared/Domain/enums/push-mode.enum';
 export * from '@/shared/Domain/enums/resume-source.enum';
 export * from '@/shared/Domain/enums/llm-provider.enum';

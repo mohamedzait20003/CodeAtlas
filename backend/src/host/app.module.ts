@@ -7,7 +7,9 @@ import configuration from '@/shared/Configuration/configuration';
 import { ENTITIES } from '@/shared/Database/entities';
 import { IdentityModule } from '@/modules/identity/identity.module';
 import { AnalyticsModule } from '@/modules/analytics/analytics.module';
-import { GenerationsModule } from '@/modules/generations/generations.module';
+import { SubscriptionModule } from '@/modules/subscription/subscription.module';
+import { PersonaModule } from '@/modules/persona/persona.module';
+import { ProjectModule } from '@/modules/project/project.module';
 import { ResumesModule } from '@/modules/resumes/resumes.module';
 
 @Module({
@@ -17,7 +19,6 @@ import { ResumesModule } from '@/modules/resumes/resumes.module';
       load: [configuration],
     }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]),
-
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -31,10 +32,11 @@ import { ResumesModule } from '@/modules/resumes/resumes.module';
           : ['error']) as LoggerOptions,
       }),
     }),
-
     IdentityModule,
     AnalyticsModule,
-    GenerationsModule,
+    SubscriptionModule,
+    PersonaModule,
+    ProjectModule,
     ResumesModule,
   ],
 })

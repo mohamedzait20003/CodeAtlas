@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Generation } from '@/modules/generations/entities/generation.entity';
-import { Repo } from '@/modules/generations/entities/repo.entity';
+import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
+import { Repo } from '@/modules/project/entities/repo.entity';
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { LlmProvider } from '@/shared/Domain/enums/llm-provider.enum';
 import {
@@ -17,25 +17,26 @@ import { RepoReadmeAgentService } from './repo-readme-agent.service';
 
 /**
  * "Compose a README" worker: reads one target repository's content and runs
- * the repo agent to produce its README. Consumes the `repo-generation` queue.
+ * the project agent to produce its README. Consumes the `repo-generation` queue.
  * Shared job lifecycle lives in {@link GenerationRunner}.
  */
 @Injectable()
-export class RepoGenerationRunner extends GenerationRunner {
+export class RepoGenerationRunner extends GenerationRunner<ProjectComposition> {
   protected readonly usageField: UsageField = 'generationsUsed';
 
   constructor(
-    @InjectRepository(Generation) generations: Repository<Generation>,
+    @InjectRepository(ProjectComposition)
+    compositions: Repository<ProjectComposition>,
     @InjectRepository(UsageCounter) usage: Repository<UsageCounter>,
     @InjectRepository(Repo) private readonly repos: Repository<Repo>,
     private readonly repoContent: RepoContentService,
     private readonly repoAgent: RepoReadmeAgentService,
   ) {
-    super(generations, usage);
+    super(compositions, usage);
   }
 
   protected async generate(
-    gen: Generation,
+    gen: ProjectComposition,
     provider: LlmProvider,
     model: string,
     onPhase: PhaseHook,

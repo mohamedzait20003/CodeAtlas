@@ -40,9 +40,6 @@ export class UserProfile {
   @OneToMany('Repo', 'profile')
   repos: any[];
 
-  @OneToMany('Generation', 'profile')
-  generations: any[];
-
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

@@ -8,8 +8,9 @@ import { User } from '@/modules/identity/entities/user.entity';
 import { Subscription } from '@/modules/subscription/entities/subscription.entity';
 import { Plan } from '@/modules/subscription/entities/plan.entity';
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
-import { Repo } from '@/modules/generations/entities/repo.entity';
-import { Generation } from '@/modules/generations/entities/generation.entity';
+import { Repo } from '@/modules/project/entities/repo.entity';
+import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
+import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { PlanTier } from '@/shared/Domain/enums/plan-tier.enum';
 import type { DashboardData } from '@/modules/analytics/dto/dashboard.dto';
 
@@ -38,8 +39,10 @@ export class DashboardService {
     @InjectRepository(UsageCounter)
     private readonly usage: Repository<UsageCounter>,
     @InjectRepository(Repo) private readonly repos: Repository<Repo>,
-    @InjectRepository(Generation)
-    private readonly generations: Repository<Generation>,
+    @InjectRepository(PersonaComposition)
+    private readonly personas: Repository<PersonaComposition>,
+    @InjectRepository(ProjectComposition)
+    private readonly projects: Repository<ProjectComposition>,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
@@ -60,7 +63,7 @@ export class DashboardService {
   }
 
   private async build(userId: string): Promise<DashboardData> {
-    const [user, subscription, reposAnalyzed, usageRow, recent] =
+    const [user, subscription, reposAnalyzed, usageRow, personas, projects] =
       await Promise.all([
         this.users.findOne({ where: { id: userId } }),
         this.subscriptions.findOne({ where: { userId } }),
@@ -69,13 +72,42 @@ export class DashboardService {
           where: { userId },
           order: { periodStart: 'DESC' },
         }),
-        this.generations.find({
+        this.personas.find({
+          where: { userId },
+          order: { createdAt: 'DESC' },
+          take: RECENT_LIMIT,
+        }),
+        this.projects.find({
           where: { userId },
           order: { createdAt: 'DESC' },
           take: RECENT_LIMIT,
           relations: ['repo'],
         }),
       ]);
+
+    // Merge the two composition streams into one recent list (newest first).
+    const recent = [
+      ...personas.map((g) => ({
+        Id: g.id,
+        Repo: 'Profile',
+        Status: g.status,
+        Model: g.model,
+        PushMode: g.pushMode,
+        PrUrl: g.prUrl,
+        CreatedAt: g.createdAt,
+      })),
+      ...projects.map((g) => ({
+        Id: g.id,
+        Repo: (g.repo as Repo | undefined)?.fullName ?? '—',
+        Status: g.status,
+        Model: g.model,
+        PushMode: g.pushMode,
+        PrUrl: g.prUrl,
+        CreatedAt: g.createdAt,
+      })),
+    ]
+      .sort((a, b) => b.CreatedAt.getTime() - a.CreatedAt.getTime())
+      .slice(0, RECENT_LIMIT);
 
     // Fall back to the Free plan when the user has no subscription yet.
     const plan =
@@ -101,13 +133,13 @@ export class DashboardService {
         PeriodEnd: subscription?.currentPeriodEnd?.toISOString() ?? null,
       },
       RecentGenerations: recent.map((g) => ({
-        Id: g.id,
-        Repo: (g.repo as Repo | undefined)?.fullName ?? '—',
-        Status: g.status,
-        Model: g.model,
-        PushMode: g.pushMode,
-        PrUrl: g.prUrl,
-        CreatedAt: g.createdAt.toISOString(),
+        Id: g.Id,
+        Repo: g.Repo,
+        Status: g.Status,
+        Model: g.Model,
+        PushMode: g.PushMode,
+        PrUrl: g.PrUrl,
+        CreatedAt: g.CreatedAt.toISOString(),
       })),
     };
   }

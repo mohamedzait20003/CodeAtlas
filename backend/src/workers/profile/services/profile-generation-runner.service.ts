@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Generation } from '@/modules/generations/entities/generation.entity';
+import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { LlmProvider } from '@/shared/Domain/enums/llm-provider.enum';
 import {
@@ -16,24 +16,25 @@ import { ProfileReadmeAgentService } from './profile-readme-agent.service';
 
 /**
  * "Compose Your Profile" worker: aggregates the user's résumé + all their repos and
- * runs the profile agent to produce a GitHub profile README. Consumes the
+ * runs the persona agent to produce a GitHub profile README. Consumes the
  * `profile-generation` queue. Shared job lifecycle lives in {@link GenerationRunner}.
  */
 @Injectable()
-export class ProfileGenerationRunner extends GenerationRunner {
+export class ProfileGenerationRunner extends GenerationRunner<PersonaComposition> {
   protected readonly usageField: UsageField = 'profileCompositionsUsed';
 
   constructor(
-    @InjectRepository(Generation) generations: Repository<Generation>,
+    @InjectRepository(PersonaComposition)
+    compositions: Repository<PersonaComposition>,
     @InjectRepository(UsageCounter) usage: Repository<UsageCounter>,
     private readonly context: ProfileContextService,
     private readonly agent: ProfileReadmeAgentService,
   ) {
-    super(generations, usage);
+    super(compositions, usage);
   }
 
   protected async generate(
-    gen: Generation,
+    gen: PersonaComposition,
     provider: LlmProvider,
     model: string,
     onPhase: PhaseHook,

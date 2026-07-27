@@ -7,8 +7,9 @@ import { Subscription } from '@/modules/subscription/entities/subscription.entit
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
 import { Resume } from '@/modules/resumes/entities/resume.entity';
-import { Repo } from '@/modules/generations/entities/repo.entity';
-import { Generation } from '@/modules/generations/entities/generation.entity';
+import { Repo } from '@/modules/project/entities/repo.entity';
+import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
+import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { AuditLog } from '@/modules/analytics/entities/audit-log.entity';
 
 /** Single source of truth for the TypeORM entity set (API + workers). */
@@ -23,6 +24,7 @@ export const ENTITIES = [
   AiModel,
   Resume,
   Repo,
-  Generation,
+  PersonaComposition,
+  ProjectComposition,
   AuditLog,
 ];

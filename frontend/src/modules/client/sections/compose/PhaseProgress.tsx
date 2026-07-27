@@ -13,7 +13,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/common/components/ui/card";
 import { Progress } from "@/common/components/ui/progress";
-import type { CompositionStatus } from "@/lib/models/compositionModel";
+import type { CompositionStatus } from "@/lib/models/personaModel";
 
 export type Step = {
   key: string;
