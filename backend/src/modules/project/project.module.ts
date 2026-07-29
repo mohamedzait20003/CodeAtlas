@@ -15,7 +15,11 @@ import { QuotaGuard } from '@/shared/Guards/quota.guard';
 import { PlanService } from '@/modules/subscription/services/plan.service';
 import { QuotaService } from '@/modules/subscription/services/quota.service';
 
-import { ReposController } from '@/modules/project/controllers/repos.controller';
+import { ListReposController } from '@/modules/project/controllers/list-repos.controller';
+import { RepoDetailController } from '@/modules/project/controllers/repo-detail.controller';
+import { GenerateCompositionController } from '@/modules/project/controllers/generate-composition.controller';
+import { ProjectStatusController } from '@/modules/project/controllers/project-status.controller';
+import { ProjectCommitController } from '@/modules/project/controllers/project-commit.controller';
 import { GithubReposService } from '@/modules/project/services/github-repos.service';
 import { ProjectCompositionService } from '@/modules/project/services/project-composition.service';
 import { ProjectCommitService } from '@/modules/project/services/project-commit.service';
@@ -39,7 +43,13 @@ import { ProjectCompositionFactory } from '@/modules/project/factories/project-c
     CacheModule.register({ ttl: 120_000 }),
     IdentityModule,
   ],
-  controllers: [ReposController],
+  controllers: [
+    ListReposController,
+    RepoDetailController,
+    GenerateCompositionController,
+    ProjectStatusController,
+    ProjectCommitController,
+  ],
   providers: [
     GithubReposService,
     ProjectCompositionService,

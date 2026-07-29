@@ -14,7 +14,10 @@ import { LlmProviderFactory } from '@/shared/Factories/llm-provider.factory';
 import { PlanService } from '@/modules/subscription/services/plan.service';
 import { QuotaService } from '@/modules/subscription/services/quota.service';
 
-import { PersonaController } from '@/modules/persona/controllers/persona.controller';
+import { StartCompositionController } from '@/modules/persona/controllers/start-composition.controller';
+import { TailorCompositionController } from '@/modules/persona/controllers/tailor-composition.controller';
+import { CompositionStatusController } from '@/modules/persona/controllers/composition-status.controller';
+import { CompositionCommitController } from '@/modules/persona/controllers/composition-commit.controller';
 import { PersonaCompositionService } from '@/modules/persona/services/persona-composition.service';
 import { PersonaTailorService } from '@/modules/persona/services/persona-tailor.service';
 import { PersonaCommitService } from '@/modules/persona/services/persona-commit.service';
@@ -36,7 +39,12 @@ import { PersonaCompositionFactory } from '@/modules/persona/factories/persona-c
     ]),
     IdentityModule,
   ],
-  controllers: [PersonaController],
+  controllers: [
+    StartCompositionController,
+    TailorCompositionController,
+    CompositionStatusController,
+    CompositionCommitController,
+  ],
   providers: [
     PersonaCompositionService,
     PersonaTailorService,
