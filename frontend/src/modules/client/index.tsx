@@ -5,6 +5,7 @@ import useAuthGuard from "@/lib/guards/authGuard";
 import useRoleGuard from "@/lib/guards/roleGuard";
 
 import Overview from "./pages/Overview";
+import Projects from "./pages/Projects";
 import ProjectCompose from "./pages/ProjectCompose";
 import PersonaCompose from "./pages/PersonaCompose";
 
@@ -29,6 +30,14 @@ const overviewRoute = createRoute({
 const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/customer/$name/projects",
+  component: Projects,
+  beforeLoad: guard,
+  ssr: false,
+});
+
+const projectComposeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/customer/$name/projects/$repoId",
   component: ProjectCompose,
   beforeLoad: guard,
   ssr: false,
@@ -42,4 +51,9 @@ const composeRoute = createRoute({
   ssr: false,
 });
 
-export const clientRoutes = [overviewRoute, projectsRoute, composeRoute];
+export const clientRoutes = [
+  overviewRoute,
+  projectsRoute,
+  projectComposeRoute,
+  composeRoute,
+];

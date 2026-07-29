@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -40,11 +41,26 @@ export class ReposController {
    */
   @Roles(UserRole.USER)
   @Get()
-  list(
+  async list(
     @CurrentUser() user: AuthenticatedUser,
     @Query() query: ListReposQuery,
   ): Promise<PagedResult<RepoItem>> {
-    return this.repos.list(user.userId, query.page, query.pageSize);
+    const page = await this.repos.list(user.userId, query.page, query.pageSize);
+    const Items = await this.projectGen.attachStatus(user.userId, page.Items);
+    return { ...page, Items };
+  }
+
+  /** One of the user's repos by GitHub id, enriched with its composition status. */
+  @Roles(UserRole.USER)
+  @Get(':id')
+  async detail(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+  ): Promise<RepoItem> {
+    const item = await this.repos.findById(user.userId, id);
+    if (!item) throw new NotFoundException('Repository not found.');
+    const [enriched] = await this.projectGen.attachStatus(user.userId, [item]);
+    return enriched;
   }
 
   /** Start a "Compose a README" job for one repo (`id` = its GitHub repo id). */

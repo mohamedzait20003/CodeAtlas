@@ -1,5 +1,5 @@
 import { baseApi } from "../api/baseApi";
-import type { ReposResponse } from "../models/repoModel";
+import type { RepoResponse, ReposResponse } from "../models/repoModel";
 import type {
   CommitResponse,
   CompositionResponse,
@@ -14,6 +14,12 @@ export async function getRepos(
   const res = await baseApi.get<ReposResponse>("/repos", {
     params: { page, pageSize },
   });
+  return res.data;
+}
+
+/** One repo by GitHub id, enriched with its composition status. */
+export async function getRepo(repoId: string): Promise<RepoResponse> {
+  const res = await baseApi.get<RepoResponse>(`/repos/${repoId}`);
   return res.data;
 }
 

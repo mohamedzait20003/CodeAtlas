@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { getRepos } from "@/lib/handlers/projectHandlers";
+import { getRepo, getRepos } from "@/lib/handlers/projectHandlers";
 
 /**
  * Paged list of the user's GitHub repositories. `keepPreviousData` keeps the
@@ -14,6 +14,17 @@ export function useRepos(page: number, pageSize = 12) {
     placeholderData: keepPreviousData,
     staleTime: 60_000,
     gcTime: 5 * 60_000,
+    select: (res) => res.Data,
+  });
+}
+
+/** A single repo (by GitHub id) with its composition status — for the compose page. */
+export function useRepo(repoId: string | null) {
+  return useQuery({
+    queryKey: ["repo", repoId],
+    queryFn: () => getRepo(repoId as string),
+    enabled: Boolean(repoId),
+    staleTime: 60_000,
     select: (res) => res.Data,
   });
 }

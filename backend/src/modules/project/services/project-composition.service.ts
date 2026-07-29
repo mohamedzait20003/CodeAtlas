@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { Repo } from '@/modules/project/entities/repo.entity';
@@ -75,6 +75,42 @@ export class ProjectCompositionService {
 
     await this.queue.queue(composition.id);
     return { Id: composition.id };
+  }
+
+  /** Attach each repo's latest README composition (null when never composed). */
+  async attachStatus(userId: string, items: RepoItem[]): Promise<RepoItem[]> {
+    if (!items.length) return items;
+
+    const repos = await this.repoRows.find({ where: { userId } });
+    if (!repos.length) {
+      return items.map((i) => ({ ...i, Composition: null }));
+    }
+
+    const repoIdByGithub = new Map(repos.map((r) => [r.githubRepoId, r.id]));
+    const comps = await this.compositions.find({
+      where: { repoId: In(repos.map((r) => r.id)) },
+      order: { createdAt: 'DESC' },
+    });
+
+    // First seen per repoId is the latest (rows are ordered newest-first).
+    const latest = new Map<string, (typeof comps)[number]>();
+    for (const c of comps) if (!latest.has(c.repoId)) latest.set(c.repoId, c);
+
+    return items.map((i) => {
+      const repoId = repoIdByGithub.get(i.Id);
+      const c = repoId ? latest.get(repoId) : undefined;
+      return {
+        ...i,
+        Composition: c
+          ? {
+              Id: c.id,
+              Status: c.status,
+              CommitSha: c.commitSha,
+              CreatedAt: c.createdAt.toISOString(),
+            }
+          : null,
+      };
+    });
   }
 
   async status(userId: string, id: string): Promise<CompositionView> {

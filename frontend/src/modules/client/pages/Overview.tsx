@@ -9,6 +9,7 @@ import { useDashboard } from "@/lib/hooks/useDashboard";
 import { useAccountName } from "@/lib/auth/account";
 import { PageIntro } from "@/modules/client/components/PageIntro";
 import { EmptyState } from "@/modules/client/components/EmptyState";
+import { CapabilitiesGrid } from "../sections/overview/CapabilitiesGrid";
 import { StatsGrid } from "../sections/overview/StatsGrid";
 import { RecentGenerations } from "../sections/overview/RecentGenerations";
 import { GettingStarted } from "../sections/overview/GettingStarted";
@@ -40,7 +41,7 @@ export default function Overview() {
     <div className="space-y-6">
       <PageIntro
         title={`Welcome back, ${firstName}`}
-        description="Here's what's happening with your READMEs."
+        description="Your CodeAtlas workspace — turn your code into docs, with more on the way."
         action={
           <Button
             asChild
@@ -48,11 +49,13 @@ export default function Overview() {
           >
             <Link to="/customer/$name/projects" params={{ name }}>
               <Sparkles className="h-4 w-4" />
-              New generation
+              New README
             </Link>
           </Button>
         }
       />
+
+      <CapabilitiesGrid />
 
       {isLoading ? (
         <OverviewSkeleton />
