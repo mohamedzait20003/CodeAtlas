@@ -13,7 +13,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 
-import { BaseController } from '@/shared/Domain/base.controller';
+import { AUTH_ROUTE, IdentityBaseController } from './identity-base.controller';
 import {
   AuthService,
   GithubUserData,
@@ -21,9 +21,9 @@ import {
 import { GithubExchangeDto } from '@/modules/identity/dto/github-exchange.dto';
 import { AuthThrottle } from '@/shared/Decorators/auth-throttle.decorator';
 
-@Controller('auth')
+@Controller(AUTH_ROUTE)
 @AuthThrottle()
-export class GithubController extends BaseController {
+export class GithubController extends IdentityBaseController {
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly callbackUrl: string;

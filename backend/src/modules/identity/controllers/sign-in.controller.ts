@@ -10,14 +10,14 @@ import {
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 
-import { BaseController } from '@/shared/Domain/base.controller';
+import { AUTH_ROUTE, IdentityBaseController } from './identity-base.controller';
 import { AuthService } from '@/modules/identity/services/auth.service';
 import { SignInDto } from '@/modules/identity/dto/sign-in.dto';
 import { AuthThrottle } from '@/shared/Decorators/auth-throttle.decorator';
 
-@Controller('auth')
+@Controller(AUTH_ROUTE)
 @AuthThrottle()
-export class SignInController extends BaseController {
+export class SignInController extends IdentityBaseController {
   private readonly refreshCookieName: string;
 
   constructor(

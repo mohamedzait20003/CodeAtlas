@@ -7,6 +7,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import type {
+  CommitView,
+  CompositionStartView,
+  CompositionView,
+} from '@/modules/persona/dto/composition.dto';
 import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
 import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
 import { Plan } from '@/modules/subscription/entities/plan.entity';
@@ -18,11 +23,6 @@ import { PersonaCompositionFactory } from '@/modules/persona/factories/persona-c
 import { PersonaCommitService } from '@/modules/persona/services/persona-commit.service';
 import type { StartCompositionDto } from '@/modules/persona/dto/start-composition.dto';
 import { composeProfileBrief } from '@/modules/persona/dto/brief.dto';
-import type {
-  CommitView,
-  CompositionStartView,
-  CompositionView,
-} from '@/modules/persona/dto/composition.dto';
 
 /**
  * "Compose Your Profile" lifecycle. Resolves the user's plan + model (catalog,

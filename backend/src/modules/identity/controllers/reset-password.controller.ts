@@ -1,13 +1,13 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
-import { BaseController } from '@/shared/Domain/base.controller';
+import { AUTH_ROUTE, IdentityBaseController } from './identity-base.controller';
 import { VerificationService } from '@/modules/identity/services/verification.service';
 import { ResetPasswordDto } from '@/modules/identity/dto/reset-password.dto';
 import { AuthThrottle } from '@/shared/Decorators/auth-throttle.decorator';
 
-@Controller('auth')
+@Controller(AUTH_ROUTE)
 @AuthThrottle()
-export class ResetPasswordController extends BaseController {
+export class ResetPasswordController extends IdentityBaseController {
   constructor(private readonly verificationService: VerificationService) {
     super();
   }
