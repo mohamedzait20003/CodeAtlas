@@ -19,7 +19,7 @@
     "migration:revert": "npm run typeorm -- migration:revert",
     "seed": "ts-node -r tsconfig-paths/register database/seeds/run-seed.ts",
     "db:clear-users": "ts-node -r tsconfig-paths/register database/scripts/clear-users.ts",
-    "workers": "ts-node -r tsconfig-paths/register src/workers/main.ts",
+    "workers": "ts-node -r tsconfig-paths/register src/jobs/main.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

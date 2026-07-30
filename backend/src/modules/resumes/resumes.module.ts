@@ -7,9 +7,12 @@ import { Plan } from '@/modules/subscription/entities/plan.entity';
 import { IdentityModule } from '@/modules/identity/identity.module';
 import { AuthGuard } from '@/shared/Guards/auth.guard';
 
-import { ResumeController } from '@/modules/resumes/controllers/resume.controller';
+import { ListResumesController } from '@/modules/resumes/controllers/list-resumes.controller';
+import { CreateResumeController } from '@/modules/resumes/controllers/create-resume.controller';
+import { DownloadResumeController } from '@/modules/resumes/controllers/download-resume.controller';
+import { DeleteResumeController } from '@/modules/resumes/controllers/delete-resume.controller';
 import { ResumeService } from '@/modules/resumes/services/resume.service';
-import { R2StorageService } from '@/modules/resumes/services/r2-storage.service';
+import { R2StorageService } from '@/shared/Services/r2-storage.service';
 
 /** Résumé storage — upload or link, capped per plan (Plan.resumeLimit). */
 @Module({
@@ -19,7 +22,12 @@ import { R2StorageService } from '@/modules/resumes/services/r2-storage.service'
     // Provides TOKEN_SERVICE for AuthGuard.
     IdentityModule,
   ],
-  controllers: [ResumeController],
+  controllers: [
+    ListResumesController,
+    CreateResumeController,
+    DownloadResumeController,
+    DeleteResumeController,
+  ],
   providers: [ResumeService, R2StorageService, AuthGuard],
 })
 export class ResumesModule {}

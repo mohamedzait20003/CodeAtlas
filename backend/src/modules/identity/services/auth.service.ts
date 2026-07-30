@@ -19,7 +19,7 @@ import {
   SessionContext,
 } from '@/modules/identity/services/session.service';
 import { VerificationService } from '@/modules/identity/services/verification.service';
-import { EncryptionService } from '@/modules/identity/services/encryption.service';
+import { EncryptionService } from '@/shared/Services/encryption.service';
 import { SignUpDto } from '@/modules/identity/dto/sign-up.dto';
 import { SignInDto } from '@/modules/identity/dto/sign-in.dto';
 

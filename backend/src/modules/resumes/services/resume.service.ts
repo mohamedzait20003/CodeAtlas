@@ -14,7 +14,7 @@ import { Subscription } from '@/modules/subscription/entities/subscription.entit
 import { Plan } from '@/modules/subscription/entities/plan.entity';
 import { ResumeSource } from '@/shared/Domain/enums/resume-source.enum';
 import { PlanTier } from '@/shared/Domain/enums/plan-tier.enum';
-import { R2StorageService } from '@/modules/resumes/services/r2-storage.service';
+import { R2StorageService } from '@/shared/Services/r2-storage.service';
 import type { CreateResumeDto } from '@/modules/resumes/dto/create-resume.dto';
 import type {
   ResumeListView,

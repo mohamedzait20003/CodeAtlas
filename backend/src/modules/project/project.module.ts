@@ -6,14 +6,10 @@ import { User } from '@/modules/identity/entities/user.entity';
 import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { Repo } from '@/modules/project/entities/repo.entity';
 import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
-import { Subscription } from '@/modules/subscription/entities/subscription.entity';
-import { Plan } from '@/modules/subscription/entities/plan.entity';
-import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { IdentityModule } from '@/modules/identity/identity.module';
+import { SubscriptionModule } from '@/modules/subscription/subscription.module';
 import { AuthGuard } from '@/shared/Guards/auth.guard';
 import { QuotaGuard } from '@/shared/Guards/quota.guard';
-import { PlanService } from '@/modules/subscription/services/plan.service';
-import { QuotaService } from '@/modules/subscription/services/quota.service';
 
 import { ListReposController } from '@/modules/project/controllers/list-repos.controller';
 import { RepoDetailController } from '@/modules/project/controllers/repo-detail.controller';
@@ -31,17 +27,10 @@ import { ProjectCompositionFactory } from '@/modules/project/factories/project-c
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User,
-      ProjectComposition,
-      Repo,
-      AiModel,
-      Subscription,
-      Plan,
-      UsageCounter,
-    ]),
+    TypeOrmModule.forFeature([User, ProjectComposition, Repo, AiModel]),
     CacheModule.register({ ttl: 120_000 }),
     IdentityModule,
+    SubscriptionModule,
   ],
   controllers: [
     ListReposController,
@@ -55,8 +44,6 @@ import { ProjectCompositionFactory } from '@/modules/project/factories/project-c
     ProjectCompositionService,
     ProjectCommitService,
     ProjectCompositionFactory,
-    PlanService,
-    QuotaService,
     AuthGuard,
     QuotaGuard,
   ],

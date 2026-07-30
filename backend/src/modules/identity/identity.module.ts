@@ -11,7 +11,7 @@ import { TokenService } from '@/modules/identity/services/token.service';
 import { AuthService } from '@/modules/identity/services/auth.service';
 import { SessionService } from '@/modules/identity/services/session.service';
 import { VerificationService } from '@/modules/identity/services/verification.service';
-import { EncryptionService } from '@/modules/identity/services/encryption.service';
+import { EncryptionService } from '@/shared/Services/encryption.service';
 import { MailFactory } from '@/modules/identity/factories/Mail.Factory';
 
 import { TOKEN_SERVICE } from '@/shared/Contracts/token-service.contract';

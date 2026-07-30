@@ -5,7 +5,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 
 import { User } from '@/modules/identity/entities/user.entity';
-import { EncryptionService } from '@/modules/identity/services/encryption.service';
+import { EncryptionService } from '@/shared/Services/encryption.service';
 import { paginate, type PagedResult } from '@/shared/Common/paged-result';
 import type { RepoItem } from '@/modules/project/dto/repo.dto';
 

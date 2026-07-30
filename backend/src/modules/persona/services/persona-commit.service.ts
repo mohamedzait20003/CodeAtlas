@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from '@/modules/identity/entities/user.entity';
-import { EncryptionService } from '@/modules/identity/services/encryption.service';
+import { EncryptionService } from '@/shared/Services/encryption.service';
 
 const GH = 'https://api.github.com';
 
