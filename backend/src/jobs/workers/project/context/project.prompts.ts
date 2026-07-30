@@ -1,11 +1,11 @@
 import { join } from 'path';
 
-import { makeAgentLoader } from '@/jobs/workers/shared/agent/card-loader';
+import { makeAgentLoader } from '@/jobs/shared/agent/card-loader';
 import type { RepoReadmeContext } from './project-context';
 
 /** This agent's card tree (…/repo/agent) + the shared cross-agent tree. */
 const AGENT_DIR = join(__dirname, '..', 'agent');
-const SHARED_DIR = join(__dirname, '..', '..', 'shared', 'agent');
+const SHARED_DIR = join(__dirname, '..', '..', '..', 'shared', 'agent');
 const assemble = makeAgentLoader(AGENT_DIR, SHARED_DIR);
 
 /** Repo ("Compose a README") role prompts, assembled once at worker startup. */

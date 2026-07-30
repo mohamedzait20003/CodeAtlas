@@ -48,7 +48,7 @@ export type AgentLoader = (agentFile: string) => string;
 
 /**
  * Builds a loader for one agent's card tree. `agentRoot` is that agent's `agent/`
- * directory; `sharedRoot` is the cross-agent tree ({@link src/jobs/workers/shared/agent}).
+ * directory; `sharedRoot` is the cross-agent tree ({@link src/jobs/shared/agent}).
  * Knowledge/skill cards resolve from the agent's own tree first, then the shared
  * tree — so cross-cutting cards (`grounding`, `voice`) live in one place without
  * duplication. Each worker runs from source, so callers pass a `__dirname`-based

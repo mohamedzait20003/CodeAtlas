@@ -26,4 +26,4 @@ State channels: `context`, `intent`, `plan`, `draft`, `critique`, `revisions`,
 
 Implemented in `../../services/persona-readme-agent.service.ts`; the role prompts are
 assembled by `../../context/profile.prompts.ts` (via the shared
-`src/jobs/workers/shared/agent/card-loader.ts`).
+`src/jobs/shared/agent/card-loader.ts`).

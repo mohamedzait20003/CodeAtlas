@@ -10,7 +10,7 @@ import {
   type AgentOutput,
   type PhaseHook,
   type UsageField,
-} from '@/jobs/workers/shared/generation-runner.base';
+} from '@/jobs/shared/generation-runner.base';
 import { PersonaContextService } from './persona-context.service';
 import { PersonaReadmeAgentService } from './persona-readme-agent.service';
 

@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import { makeAgentLoader } from '@/jobs/workers/shared/agent/card-loader';
+import { makeAgentLoader } from '@/jobs/shared/agent/card-loader';
 import type { ProfileContext } from './persona-context';
 
 /** Truncate a repo README when packing it into a synthesis prompt. */
@@ -8,7 +8,7 @@ const REPO_README_IN_PROMPT = 1_500;
 
 /** This agent's card tree (…/profile/agent) + the shared cross-agent tree. */
 const AGENT_DIR = join(__dirname, '..', 'agent');
-const SHARED_DIR = join(__dirname, '..', '..', 'shared', 'agent');
+const SHARED_DIR = join(__dirname, '..', '..', '..', 'shared', 'agent');
 const assemble = makeAgentLoader(AGENT_DIR, SHARED_DIR);
 
 /** Profile ("Compose Your Profile") role prompts, assembled once at worker startup. */
