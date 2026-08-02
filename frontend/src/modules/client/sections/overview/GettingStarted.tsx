@@ -56,7 +56,7 @@ export function GettingStarted() {
   const completed = steps.filter((s) => s.done).length;
 
   return (
-    <Card className="h-full">
+    <Card>
       <CardHeader>
         <CardTitle>Getting started</CardTitle>
         <CardDescription>

@@ -30,7 +30,7 @@ export function RecentGenerations({
   const name = useAccountName();
 
   return (
-    <Card className="h-full">
+    <Card>
       <CardHeader className="border-b">
         <CardTitle>Recent generations</CardTitle>
         <CardAction>
