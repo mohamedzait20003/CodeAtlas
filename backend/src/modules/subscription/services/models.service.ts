@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
-import { PlanService } from '@/modules/subscription/services/plan.service';
+import { PlansService } from '@/modules/subscription/services/plans.service';
 import { tierWithin } from '@/shared/Domain/enums/model-tier.enum';
 import type { AiModelView } from '@/modules/subscription/dto/ai-model.dto';
 
 /** The enabled models a user may pick — those at or below their plan's tier. */
 @Injectable()
-export class AiModelsService {
+export class ModelsService {
   constructor(
     @InjectRepository(AiModel) private readonly aiModels: Repository<AiModel>,
-    private readonly plans: PlanService,
+    private readonly plans: PlansService,
   ) {}
 
   async available(userId: string): Promise<AiModelView[]> {

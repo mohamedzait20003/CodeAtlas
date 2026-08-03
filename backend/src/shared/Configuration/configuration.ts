@@ -52,6 +52,18 @@ export default () => ({
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
   },
 
+  billing: {
+    /** Region used when a user has no country set (→ the default gateway). */
+    defaultRegion: process.env.BILLING_DEFAULT_REGION ?? 'US',
+    /** Where the gateway's hosted checkout returns the user. */
+    successUrl:
+      process.env.BILLING_SUCCESS_URL ??
+      `${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/customer/me/profile/billing?billing=success`,
+    cancelUrl:
+      process.env.BILLING_CANCEL_URL ??
+      `${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/customer/me/profile/billing?billing=cancelled`,
+  },
+
   /** Cloudflare R2 (S3-compatible) — private bucket for résumé uploads. */
   r2: {
     accountId: process.env.R2_ACCOUNT_ID ?? '',

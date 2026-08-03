@@ -11,7 +11,7 @@ import { ProjectComposition } from '@/modules/project/entities/project-compositi
 import { Repo } from '@/modules/project/entities/repo.entity';
 import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
 import { Plan } from '@/modules/subscription/entities/plan.entity';
-import { PlanService } from '@/modules/subscription/services/plan.service';
+import { PlansService } from '@/modules/subscription/services/plans.service';
 import { GenerationStatus } from '@/shared/Domain/enums/generation-status.enum';
 import { PushMode } from '@/shared/Domain/enums/push-mode.enum';
 import { tierWithin } from '@/shared/Domain/enums/model-tier.enum';
@@ -41,7 +41,7 @@ export class ProjectCompositionService {
     private readonly compositions: Repository<ProjectComposition>,
     @InjectRepository(Repo) private readonly repoRows: Repository<Repo>,
     @InjectRepository(AiModel) private readonly aiModels: Repository<AiModel>,
-    private readonly plans: PlanService,
+    private readonly plans: PlansService,
     private readonly repos: GithubReposService,
     private readonly queue: ProjectCompositionFactory,
     private readonly github: ProjectCommitService,

@@ -11,6 +11,8 @@ import { Repo } from '@/modules/project/entities/repo.entity';
 import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
 import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { AuditLog } from '@/modules/analytics/entities/audit-log.entity';
+import { PlanPrice } from '@/modules/subscription/entities/plan-price.entity';
+import { PaymentEvent } from '@/modules/subscription/entities/payment-event.entity';
 
 /** Single source of truth for the TypeORM entity set (API + workers). */
 export const ENTITIES = [
@@ -27,4 +29,6 @@ export const ENTITIES = [
   PersonaComposition,
   ProjectComposition,
   AuditLog,
+  PlanPrice,
+  PaymentEvent,
 ];

@@ -17,6 +17,10 @@ export class UserProfile {
   @Column({ type: 'text', name: 'stripe_customer_id', nullable: true })
   stripeCustomerId: string | null;
 
+  /** ISO country code — selects the region's payment gateway at checkout. */
+  @Column({ type: 'text', nullable: true })
+  country: string | null;
+
   /**
    * Back-reference to the auth row.
    */

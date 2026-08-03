@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { Plan } from '@/modules/subscription/entities/plan.entity';
-import { PlanService } from '@/modules/subscription/services/plan.service';
+import { PlansService } from '@/modules/subscription/services/plans.service';
 import { QuotaKind } from '@/shared/Domain/enums/quota-kind.enum';
 
 type UsageField = 'profileCompositionsUsed' | 'generationsUsed';
@@ -34,7 +34,7 @@ export class QuotaService {
   constructor(
     @InjectRepository(UsageCounter)
     private readonly usage: Repository<UsageCounter>,
-    private readonly plans: PlanService,
+    private readonly plans: PlansService,
   ) {}
 
   async reserve(userId: string, kind: QuotaKind): Promise<void> {

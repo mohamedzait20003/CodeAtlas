@@ -11,7 +11,7 @@ import { QuotaKind } from '@/shared/Domain/enums/quota-kind.enum';
  *   @Roles(UserRole.USER)   // keep below @Quota — AuthGuard must run first
  *   @Post()
  *
- * The consuming module registers QuotaGuard + QuotaService (+ PlanService).
+ * The consuming module registers QuotaGuard + QuotaService (+ PlansService).
  */
 export function Quota(kind: QuotaKind) {
   return applyDecorators(UseGuards(QuotaGuard), SetMetadata(QUOTA_KEY, kind));

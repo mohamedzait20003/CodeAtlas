@@ -15,7 +15,7 @@ import type {
 import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
 import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
 import { Plan } from '@/modules/subscription/entities/plan.entity';
-import { PlanService } from '@/modules/subscription/services/plan.service';
+import { PlansService } from '@/modules/subscription/services/plans.service';
 import { GenerationStatus } from '@/shared/Domain/enums/generation-status.enum';
 import { PushMode } from '@/shared/Domain/enums/push-mode.enum';
 import { tierWithin } from '@/shared/Domain/enums/model-tier.enum';
@@ -36,7 +36,7 @@ export class PersonaCompositionService {
     @InjectRepository(PersonaComposition)
     private readonly compositions: Repository<PersonaComposition>,
     @InjectRepository(AiModel) private readonly aiModels: Repository<AiModel>,
-    private readonly plans: PlanService,
+    private readonly plans: PlansService,
     private readonly queue: PersonaCompositionFactory,
     private readonly github: PersonaCommitService,
   ) {}

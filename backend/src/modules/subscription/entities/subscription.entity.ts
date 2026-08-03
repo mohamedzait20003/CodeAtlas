@@ -38,11 +38,32 @@ export class Subscription {
   })
   status: SubscriptionStatus;
 
-  @Column({ type: 'text', name: 'stripe_subscription_id', nullable: true })
-  stripeSubscriptionId: string | null;
+  /** Which payment gateway owns this subscription ('stripe', 'paymob', …). */
+  @Column({ type: 'text', nullable: true })
+  gateway: string | null;
+
+  /** The gateway's own subscription id (Stripe subscription, Paymob order, …). */
+  @Column({ type: 'text', name: 'gateway_ref', nullable: true })
+  gatewayRef: string | null;
+
+  /** Billing interval: 'month' | 'year'. */
+  @Column({ type: 'text', nullable: true })
+  interval: string | null;
 
   @Column({ type: 'timestamptz', name: 'current_period_end', nullable: true })
   currentPeriodEnd: Date | null;
+
+  /** Set when the user cancels — access is kept until `effectiveEndAt`. */
+  @Column({
+    type: 'boolean',
+    name: 'cancel_at_period_end',
+    default: false,
+  })
+  cancelAtPeriodEnd: boolean;
+
+  /** When a cancelled subscription actually ends (end of the current month). */
+  @Column({ type: 'timestamptz', name: 'effective_end_at', nullable: true })
+  effectiveEndAt: Date | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

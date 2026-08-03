@@ -1,16 +1,22 @@
 import { Controller, Get } from '@nestjs/common';
 
+import {
+  AI_MODELS_ROUTE,
+  SubscriptionBaseController,
+} from './subscription-base.controller';
 import { Roles } from '@/shared/Decorators/auth-role.decorator';
 import { CurrentUser } from '@/shared/Decorators/current-user.decorator';
 import { UserRole } from '@/shared/Domain/enums/user-role.enum';
 import type { AuthenticatedUser } from '@/shared/Contracts/authenticated-user.contract';
-import { AiModelsService } from '@/modules/subscription/services/ai-models.service';
+import { ModelsService } from '@/modules/subscription/services/models.service';
 import type { AiModelView } from '@/modules/subscription/dto/ai-model.dto';
 
 /** Models the signed-in user may pick from (enabled + within their plan tier). */
-@Controller('ai-models')
-export class AiModelsController {
-  constructor(private readonly models: AiModelsService) {}
+@Controller(AI_MODELS_ROUTE)
+export class AiModelsController extends SubscriptionBaseController {
+  constructor(private readonly models: ModelsService) {
+    super();
+  }
 
   @Roles(UserRole.USER)
   @Get()
