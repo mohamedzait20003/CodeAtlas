@@ -59,9 +59,18 @@ export interface NormalizedSubscription {
   interval: PaymentInterval | null;
   currentPeriodEnd: Date | null;
   cancelAtPeriodEnd: boolean;
+  /** A scheduled end date, when cancellation was set for a specific instant
+   * (our policies end access at month end, not at the period end). */
+  cancelAt: Date | null;
   /** Our user id from the gateway's metadata, when present. */
   userId: string | null;
   customerRef: string | null;
+}
+
+export interface RefundResult {
+  /** The gateway's refund id. */
+  ref: string;
+  amount: number;
 }
 
 /**
@@ -89,4 +98,13 @@ export interface PaymentGateway {
 
   /** The gateway's current state for a subscription (null if it's gone). */
   fetchSubscription(ref: string): Promise<NormalizedSubscription | null>;
+
+  /** Schedule the subscription to end at `effectiveEnd` (access kept until then). */
+  cancel(ref: string, effectiveEnd: Date): Promise<void>;
+
+  /**
+   * Refund `amount` (minor units) against the subscription's most recent
+   * payment. Returns null when the gateway has nothing refundable.
+   */
+  refund(ref: string, amount: number): Promise<RefundResult | null>;
 }

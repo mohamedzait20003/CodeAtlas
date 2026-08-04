@@ -72,11 +72,14 @@ export class SubscriptionProjectionService {
     row.status = remote.status;
     row.interval = remote.interval;
     row.currentPeriodEnd = remote.currentPeriodEnd;
-    row.cancelAtPeriodEnd = remote.cancelAtPeriodEnd;
-    // A cancel-at-period-end keeps access until the period actually closes.
-    row.effectiveEndAt = remote.cancelAtPeriodEnd
-      ? remote.currentPeriodEnd
-      : null;
+    // "Scheduled to end" covers both flavours: an exact `cancelAt` (what our
+    // cancellation policies set — month end) or the gateway's own
+    // cancel-at-period-end flag.
+    row.cancelAtPeriodEnd =
+      remote.cancelAtPeriodEnd || Boolean(remote.cancelAt);
+    row.effectiveEndAt =
+      remote.cancelAt ??
+      (remote.cancelAtPeriodEnd ? remote.currentPeriodEnd : null);
     row.planId = ended
       ? await this.freePlanId()
       : ((await this.planIdForPrice(gateway.key, remote.priceRef)) ??

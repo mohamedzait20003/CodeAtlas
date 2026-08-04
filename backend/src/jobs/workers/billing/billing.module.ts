@@ -10,6 +10,7 @@ import { StripeGateway } from '@/modules/subscription/adapters/stripe.gateway';
 import { PaymentGatewayFactory } from '@/modules/subscription/factories/payment-gateway.factory';
 import { SubscriptionProjectionService } from './services/subscription-projection.service';
 import { BillingEventRunner } from './services/billing-event-runner.service';
+import { BillingReconciliationService } from './services/billing-reconciliation.service';
 
 /**
  * Billing worker providers — applies verified gateway webhooks to the
@@ -27,10 +28,11 @@ import { BillingEventRunner } from './services/billing-event-runner.service';
   ],
   providers: [
     BillingEventRunner,
+    BillingReconciliationService,
     SubscriptionProjectionService,
     PaymentGatewayFactory,
     StripeGateway,
   ],
-  exports: [BillingEventRunner],
+  exports: [BillingEventRunner, BillingReconciliationService],
 })
 export class BillingWorkerModule {}

@@ -19,11 +19,15 @@ import { ModelsService } from '@/modules/subscription/services/models.service';
 import { ListPlansController } from '@/modules/subscription/controllers/list-plans.controller';
 import { CheckoutController } from '@/modules/subscription/controllers/checkout.controller';
 import { WebhookController } from '@/modules/subscription/controllers/webhook.controller';
+import { CancellationPreviewController } from '@/modules/subscription/controllers/cancellation-preview.controller';
+import { CancelSubscriptionController } from '@/modules/subscription/controllers/cancel-subscription.controller';
 import { BillingService } from '@/modules/subscription/services/billing.service';
 import { WebhookService } from '@/modules/subscription/services/webhook.service';
+import { CancellationService } from '@/modules/subscription/services/cancellation.service';
 import { StripeGateway } from '@/modules/subscription/adapters/stripe.gateway';
 import { PaymentGatewayFactory } from '@/modules/subscription/factories/payment-gateway.factory';
 import { BillingEventFactory } from '@/modules/subscription/factories/billing-event.factory';
+import { CancellationPolicyFactory } from '@/modules/subscription/factories/cancellation-policy.factory';
 
 /**
  * Subscription module — plans, the AI-model catalog, per-period usage, and billing
@@ -49,6 +53,8 @@ import { BillingEventFactory } from '@/modules/subscription/factories/billing-ev
     ListPlansController,
     CheckoutController,
     WebhookController,
+    CancellationPreviewController,
+    CancelSubscriptionController,
   ],
   providers: [
     ModelsService,
@@ -56,8 +62,10 @@ import { BillingEventFactory } from '@/modules/subscription/factories/billing-ev
     QuotaService,
     BillingService,
     WebhookService,
+    CancellationService,
     PaymentGatewayFactory,
     BillingEventFactory,
+    CancellationPolicyFactory,
     StripeGateway,
     AuthGuard,
   ],

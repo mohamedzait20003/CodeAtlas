@@ -28,3 +28,33 @@ export interface PlanView {
 export interface CheckoutView {
   Url: string;
 }
+
+/** Inputs the cancellation rules need to decide an outcome. */
+export interface CancellationRequest {
+  now: Date;
+  /** End of the paid term (the subscription's current period end). */
+  periodEnd: Date | null;
+  /** The plan's yearly price in minor units — used to prorate a refund. */
+  yearlyAmount: number | null;
+}
+
+/** What the cancellation rules decided. */
+export interface CancellationOutcome {
+  /** Access is kept until this instant. */
+  effectiveEnd: Date;
+  /** Minor units to refund (0 when the policy grants none). */
+  refundAmount: number;
+  /** Human-readable summary for the confirmation UI. */
+  reason: string;
+}
+
+/** What cancelling does (preview) or did (after POST /billing/cancel). */
+export interface CancellationView {
+  /** Access is kept until this instant (ISO). */
+  EffectiveEnd: string;
+  /** Minor units refunded — 0 on monthly plans. */
+  RefundAmount: number;
+  Currency: string;
+  Interval: string | null;
+  Reason: string;
+}

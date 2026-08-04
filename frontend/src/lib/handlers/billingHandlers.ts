@@ -1,5 +1,6 @@
 import { baseApi } from "../api/baseApi";
 import type {
+  CancellationResponse,
   CheckoutResponse,
   PaymentInterval,
   PlansResponse,
@@ -20,5 +21,17 @@ export async function startCheckout(
     planTier,
     interval,
   });
+  return res.data;
+}
+
+/** What cancelling now would do — end date + any refund. No side effects. */
+export async function getCancellationPreview(): Promise<CancellationResponse> {
+  const res = await baseApi.get<CancellationResponse>("/billing/cancellation");
+  return res.data;
+}
+
+/** Apply the plan's cancellation policy. */
+export async function cancelSubscription(): Promise<CancellationResponse> {
+  const res = await baseApi.post<CancellationResponse>("/billing/cancel", {});
   return res.data;
 }

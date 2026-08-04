@@ -15,6 +15,7 @@ import type {
   NormalizedSubscription,
   PaymentGateway,
   PaymentInterval,
+  RefundResult,
 } from './payment-gateway';
 
 /** Stripe subscription status → our projection status. */
@@ -209,8 +210,57 @@ export class StripeGateway implements PaymentGateway {
           : null,
       currentPeriodEnd: periodEndOf(sub),
       cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end),
+      cancelAt:
+        typeof sub.cancel_at === 'number'
+          ? new Date(sub.cancel_at * 1000)
+          : null,
       userId: sub.metadata?.userId ?? null,
       customerRef: refOf(sub.customer),
     };
+  }
+
+  /**
+   * Schedule the end with `cancel_at` (an exact instant) rather than
+   * `cancel_at_period_end` — our policies end access at month end, which is not
+   * the same as the paid period's end.
+   */
+  async cancel(ref: string, effectiveEnd: Date): Promise<void> {
+    await this.stripe.subscriptions.update(ref, {
+      cancel_at: Math.floor(effectiveEnd.getTime() / 1000),
+    });
+  }
+
+  async refund(ref: string, amount: number): Promise<RefundResult | null> {
+    if (amount <= 0) return null;
+
+    const invoices = await this.stripe.invoices.list({
+      subscription: ref,
+      status: 'paid',
+      limit: 1,
+    });
+    const invoice = invoices.data[0];
+    if (!invoice) return null;
+
+    // `payment_intent` moved under `payments` in Stripe's 2025 API versions.
+    const legacy = refOf(
+      (invoice as unknown as { payment_intent?: unknown }).payment_intent,
+    );
+    const nested = refOf(
+      (
+        invoice as unknown as {
+          payments?: {
+            data?: { payment?: { payment_intent?: unknown } }[];
+          };
+        }
+      ).payments?.data?.[0]?.payment?.payment_intent,
+    );
+    const paymentIntent = legacy ?? nested;
+    if (!paymentIntent) return null;
+
+    const refund = await this.stripe.refunds.create({
+      payment_intent: paymentIntent,
+      amount,
+    });
+    return { ref: refund.id, amount: refund.amount };
   }
 }

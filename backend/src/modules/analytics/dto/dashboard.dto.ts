@@ -4,6 +4,8 @@ export interface DashboardPlan {
   Tier: string;
   Name: string;
   Status: string;
+  /** Set when the subscription is scheduled to end — access lasts until then. */
+  EndsAt: string | null;
 }
 
 export interface DashboardUsage {

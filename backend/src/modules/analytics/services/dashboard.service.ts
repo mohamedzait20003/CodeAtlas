@@ -122,6 +122,9 @@ export class DashboardService {
         Tier: tier,
         Name: PLAN_NAMES[tier],
         Status: subscription?.status ?? 'active',
+        EndsAt: subscription?.cancelAtPeriodEnd
+          ? (subscription.effectiveEndAt?.toISOString() ?? null)
+          : null,
       },
       Usage: {
         CompositionsUsed: usageRow?.profileCompositionsUsed ?? 0,

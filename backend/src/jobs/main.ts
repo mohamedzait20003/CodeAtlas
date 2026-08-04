@@ -21,6 +21,7 @@ import { SenderService } from './workers/mail/services/sender.service';
 import { PersonaGenerationRunner } from './workers/persona/services/persona-generation-runner.service';
 import { ProjectGenerationRunner } from './workers/project/services/project-generation-runner.service';
 import { BillingEventRunner } from './workers/billing/services/billing-event-runner.service';
+import { BillingReconciliationService } from './workers/billing/services/billing-reconciliation.service';
 import type { EmailJobPayload } from './workers/mail/types';
 
 const REDIS_OPTS: RedisOptions = {
@@ -42,6 +43,7 @@ async function bootstrap(): Promise<void> {
   const profileRunner = app.get(PersonaGenerationRunner);
   const repoRunner = app.get(ProjectGenerationRunner);
   const billingRunner = app.get(BillingEventRunner);
+  const reconciliation = app.get(BillingReconciliationService);
 
   const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
   // Each worker gets its own connection (bullmq uses blocking commands).
@@ -116,9 +118,31 @@ async function bootstrap(): Promise<void> {
     console.error(`[workers:billing] ✗ ${job?.id}: ${err.message}`),
   );
 
+  // Safety net for webhooks that never arrived — re-projects live subscriptions
+  // from their gateway on a slow cadence (default 6h; 0 disables).
+  const reconcileHours = intEnv('BILLING_RECONCILE_HOURS', 6);
+  const reconcileTimer =
+    reconcileHours > 0
+      ? setInterval(
+          () => {
+            void reconciliation
+              .run()
+              .catch((err: unknown) =>
+                console.error(
+                  `[workers:billing] reconcile failed: ${
+                    err instanceof Error ? err.message : String(err)
+                  }`,
+                ),
+              );
+          },
+          reconcileHours * 60 * 60 * 1_000,
+        )
+      : null;
+
   console.log('[workers] Ready — mail + profile + repo + billing');
 
   const shutdown = async () => {
+    if (reconcileTimer) clearInterval(reconcileTimer);
     await Promise.all([
       mailWorker.close(),
       profileWorker.close(),
