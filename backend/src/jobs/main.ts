@@ -11,11 +11,16 @@ import {
   REPO_GENERATION_QUEUE,
   type RepoGenerationJob,
 } from '@/modules/project/factories/project-composition.factory';
+import {
+  BILLING_EVENT_QUEUE,
+  type BillingEventJob,
+} from '@/modules/subscription/factories/billing-event.factory';
 import { JobsModule } from './jobs.module';
 import { RendererService } from './workers/mail/services/renderer.service';
 import { SenderService } from './workers/mail/services/sender.service';
 import { PersonaGenerationRunner } from './workers/persona/services/persona-generation-runner.service';
 import { ProjectGenerationRunner } from './workers/project/services/project-generation-runner.service';
+import { BillingEventRunner } from './workers/billing/services/billing-event-runner.service';
 import type { EmailJobPayload } from './workers/mail/types';
 
 const REDIS_OPTS: RedisOptions = {
@@ -36,12 +41,14 @@ async function bootstrap(): Promise<void> {
   const sender = app.get(SenderService);
   const profileRunner = app.get(PersonaGenerationRunner);
   const repoRunner = app.get(ProjectGenerationRunner);
+  const billingRunner = app.get(BillingEventRunner);
 
   const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
   // Each worker gets its own connection (bullmq uses blocking commands).
   const mailConnection = new Redis(redisUrl, REDIS_OPTS);
   const profileConnection = new Redis(redisUrl, REDIS_OPTS);
   const repoConnection = new Redis(redisUrl, REDIS_OPTS);
+  const billingConnection = new Redis(redisUrl, REDIS_OPTS);
 
   const mailWorker = new Worker<EmailJobPayload>(
     'email',
@@ -83,6 +90,19 @@ async function bootstrap(): Promise<void> {
     },
   );
 
+  const billingWorker = new Worker<BillingEventJob>(
+    BILLING_EVENT_QUEUE,
+    async (job: Job<BillingEventJob>) => {
+      await billingRunner.run(job.data.gateway, job.data.eventId);
+    },
+    {
+      connection: billingConnection,
+      concurrency: intEnv('BILLING_WORKER_CONCURRENCY', 5),
+      removeOnComplete: { count: 200 },
+      removeOnFail: { count: 200 },
+    },
+  );
+
   mailWorker.on('failed', (job, err) =>
     console.error(`[workers:mail] ✗ ${job?.id}: ${err.message}`),
   );
@@ -92,19 +112,24 @@ async function bootstrap(): Promise<void> {
   repoWorker.on('failed', (job, err) =>
     console.error(`[workers:repo] ✗ ${job?.id}: ${err.message}`),
   );
+  billingWorker.on('failed', (job, err) =>
+    console.error(`[workers:billing] ✗ ${job?.id}: ${err.message}`),
+  );
 
-  console.log('[workers] Ready — mail + profile + repo');
+  console.log('[workers] Ready — mail + profile + repo + billing');
 
   const shutdown = async () => {
     await Promise.all([
       mailWorker.close(),
       profileWorker.close(),
       repoWorker.close(),
+      billingWorker.close(),
     ]);
     await Promise.all([
       mailConnection.quit(),
       profileConnection.quit(),
       repoConnection.quit(),
+      billingConnection.quit(),
     ]);
     await app.close();
     process.exit(0);

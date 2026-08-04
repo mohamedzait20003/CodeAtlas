@@ -7,6 +7,7 @@ import { ENTITIES } from '@/shared/Database/entities';
 import { MailWorkerModule } from './workers/mail/mail.module';
 import { PersonaWorkerModule } from './workers/persona/persona.module';
 import { ProjectWorkerModule } from './workers/project/project.module';
+import { BillingWorkerModule } from './workers/billing/billing.module';
 
 /**
  * Single application context for all background workers. Sets up config + the
@@ -29,6 +30,7 @@ import { ProjectWorkerModule } from './workers/project/project.module';
     MailWorkerModule,
     PersonaWorkerModule,
     ProjectWorkerModule,
+    BillingWorkerModule,
   ],
 })
 export class JobsModule {}

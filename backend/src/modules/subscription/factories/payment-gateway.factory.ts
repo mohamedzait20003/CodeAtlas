@@ -42,6 +42,15 @@ export class PaymentGatewayFactory {
     this.byKey.set(gateway.key, gateway);
   }
 
+  /** The adapter registered under a gateway key (used by the webhook route). */
+  resolveByKey(key: string): PaymentGateway {
+    const gateway = this.byKey.get(key.toLowerCase());
+    if (!gateway) {
+      throw new BadRequestException(`Unknown payment gateway: ${key}`);
+    }
+    return gateway;
+  }
+
   /**
    * The adapter for a region, or a clear error if that region isn't wired yet.
    * A missing region (user has no country) falls back to `billing.defaultRegion`.

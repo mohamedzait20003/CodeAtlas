@@ -8,7 +8,9 @@ import { HttpExceptionFilter } from '@/shared/Common/filters/http-exception.filt
 import { ResponseInterceptor } from '@/shared/Common/interceptors/response.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // `rawBody` keeps the unparsed payload alongside the parsed one — payment
+  // gateways sign the raw bytes, so webhook verification needs it verbatim.
+  const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(cookieParser());
   app.setGlobalPrefix('api/v1');

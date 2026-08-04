@@ -12,10 +12,30 @@ const GATEWAY = 'stripe';
  * Amounts are display-only minor units.
  */
 const CATALOG = [
-  { tier: PlanTier.STARTER, interval: 'month', amount: 900, env: 'STRIPE_PRICE_STARTER_MONTH' },
-  { tier: PlanTier.STARTER, interval: 'year', amount: 9000, env: 'STRIPE_PRICE_STARTER_YEAR' },
-  { tier: PlanTier.PRO, interval: 'month', amount: 2900, env: 'STRIPE_PRICE_PRO_MONTH' },
-  { tier: PlanTier.PRO, interval: 'year', amount: 29000, env: 'STRIPE_PRICE_PRO_YEAR' },
+  {
+    tier: PlanTier.STARTER,
+    interval: 'month',
+    amount: 900,
+    env: 'STRIPE_PRICE_STARTER_MONTH',
+  },
+  {
+    tier: PlanTier.STARTER,
+    interval: 'year',
+    amount: 9000,
+    env: 'STRIPE_PRICE_STARTER_YEAR',
+  },
+  {
+    tier: PlanTier.PRO,
+    interval: 'month',
+    amount: 2900,
+    env: 'STRIPE_PRICE_PRO_MONTH',
+  },
+  {
+    tier: PlanTier.PRO,
+    interval: 'year',
+    amount: 29000,
+    env: 'STRIPE_PRICE_PRO_YEAR',
+  },
 ];
 
 export async function seedPlanPrices(dataSource: DataSource): Promise<void> {

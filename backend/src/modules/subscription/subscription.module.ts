@@ -18,9 +18,12 @@ import { AiModelsController } from '@/modules/subscription/controllers/ai-models
 import { ModelsService } from '@/modules/subscription/services/models.service';
 import { ListPlansController } from '@/modules/subscription/controllers/list-plans.controller';
 import { CheckoutController } from '@/modules/subscription/controllers/checkout.controller';
+import { WebhookController } from '@/modules/subscription/controllers/webhook.controller';
 import { BillingService } from '@/modules/subscription/services/billing.service';
+import { WebhookService } from '@/modules/subscription/services/webhook.service';
 import { StripeGateway } from '@/modules/subscription/adapters/stripe.gateway';
 import { PaymentGatewayFactory } from '@/modules/subscription/factories/payment-gateway.factory';
+import { BillingEventFactory } from '@/modules/subscription/factories/billing-event.factory';
 
 /**
  * Subscription module — plans, the AI-model catalog, per-period usage, and billing
@@ -41,13 +44,20 @@ import { PaymentGatewayFactory } from '@/modules/subscription/factories/payment-
     ]),
     IdentityModule,
   ],
-  controllers: [AiModelsController, ListPlansController, CheckoutController],
+  controllers: [
+    AiModelsController,
+    ListPlansController,
+    CheckoutController,
+    WebhookController,
+  ],
   providers: [
     ModelsService,
     PlansService,
     QuotaService,
     BillingService,
+    WebhookService,
     PaymentGatewayFactory,
+    BillingEventFactory,
     StripeGateway,
     AuthGuard,
   ],
