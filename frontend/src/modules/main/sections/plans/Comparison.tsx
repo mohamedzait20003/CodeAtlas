@@ -1,81 +1,50 @@
 import { Check, Minus } from "lucide-react";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { Separator } from "@/common/components/ui/separator";
+import { Skeleton } from "@/common/components/ui/skeleton";
+import { usePublicPlans } from "@/lib/hooks/useBilling";
+import { amount } from "@/lib/models/planDisplay";
+import type { PlanView } from "@/lib/models/billingModel";
 
-const PLANS = [
-  {
-    name: "Free",
-    highlight: false,
-    features: {
-      repos: "3",
-      readmeGenerations: "5 / month",
-      compositions: "1 / month",
-      resumes: "1",
-      model: "Economy",
-      privateRepos: false,
-      pushMode: "Manual / PR only",
-      bulkGenerate: false,
-      customTemplates: "None",
-      history: "7 days",
-      watermark: true,
-      support: "Community",
-      apiAccess: false,
-    },
-  },
-  {
-    name: "Starter",
-    highlight: true,
-    features: {
-      repos: "25",
-      readmeGenerations: "75 / month",
-      compositions: "4 / month",
-      resumes: "5",
-      model: "Standard",
-      privateRepos: true,
-      pushMode: "PR auto-open",
-      bulkGenerate: false,
-      customTemplates: "1 template",
-      history: "90 days",
-      watermark: false,
-      support: "Email",
-      apiAccess: false,
-    },
-  },
-  {
-    name: "Pro",
-    highlight: false,
-    features: {
-      repos: "Unlimited",
-      readmeGenerations: "750 / month",
-      compositions: "Unlimited",
-      resumes: "Unlimited",
-      model: "Premium",
-      privateRepos: true,
-      pushMode: "PR or direct push",
-      bulkGenerate: true,
-      customTemplates: "Unlimited",
-      history: "Unlimited",
-      watermark: false,
-      support: "Priority",
-      apiAccess: true,
-    },
-  },
-] as const;
+/** 0 = none, -1 = unlimited, otherwise a count. */
+function templates(count: number): string {
+  if (count === 0) return "None";
+  if (count < 0) return "Unlimited";
+  return `${count} template${count === 1 ? "" : "s"}`;
+}
 
-const ROWS: { label: string; key: keyof (typeof PLANS)[0]["features"] }[] = [
-  { label: "Repositories", key: "repos" },
-  { label: "Repo READMEs / month", key: "readmeGenerations" },
-  { label: "Compose Your Profile / month", key: "compositions" },
-  { label: "Saved resumes", key: "resumes" },
-  { label: "AI model tier", key: "model" },
-  { label: "Private repos", key: "privateRepos" },
-  { label: "Push mode", key: "pushMode" },
-  { label: "Bulk generation", key: "bulkGenerate" },
-  { label: "Custom templates", key: "customTemplates" },
-  { label: "History retention", key: "history" },
-  { label: "Watermark", key: "watermark" },
-  { label: "Support", key: "support" },
-  { label: "API access", key: "apiAccess" },
+/** One comparison row: a label and how to read it off a plan. */
+const ROWS: { label: string; value: (p: PlanView) => string | boolean }[] = [
+  { label: "Credits / week", value: (p) => amount(p.WeeklyCredits) },
+  {
+    label: "≈ Project READMEs / week",
+    value: (p) => amount(p.ApproxProjectReadmes),
+  },
+  {
+    label: "≈ Profile composes / week",
+    value: (p) => amount(p.ApproxProfileComposes),
+  },
+  { label: "Repositories", value: () => "Unlimited" },
+  { label: "Saved resumes", value: () => "Unlimited" },
+  {
+    label: "AI model tier",
+    value: (p) => `${p.ModelTier[0].toUpperCase()}${p.ModelTier.slice(1)}`,
+  },
+  { label: "Private repos", value: (p) => p.PrivateRepos },
+  {
+    label: "Push mode",
+    value: (p) => (p.DirectPush ? "PR or direct push" : "Manual / PR only"),
+  },
+  { label: "Bulk generation", value: (p) => p.BulkGenerate },
+  { label: "Custom templates", value: (p) => templates(p.CustomTemplates) },
+  {
+    label: "History retention",
+    value: (p) =>
+      p.HistoryRetentionDays < 0 ? "Unlimited" : `${p.HistoryRetentionDays} days`,
+  },
+  { label: "Watermark", value: (p) => p.Watermark },
+  { label: "Support", value: (p) => p.Support },
+  { label: "API access", value: (p) => p.ApiAccess },
 ];
 
 function Cell({ value }: { value: string | boolean }) {
@@ -89,45 +58,63 @@ function Cell({ value }: { value: string | boolean }) {
   return <span className="text-sm text-foreground">{value}</span>;
 }
 
+/** Full tier comparison — rendered entirely from GET /plans. */
 export function ComparisonSection() {
+  const { data: plans = [], isLoading } = usePublicPlans();
+
   return (
     <section className="px-4 pb-20 pt-4 sm:px-6">
       <div className="mx-auto max-w-5xl">
         <Separator className="mb-10" />
-        <h2 className="mb-6 text-xl font-bold text-foreground">Full comparison</h2>
+        <h2 className="mb-6 text-xl font-bold text-foreground">
+          Full comparison
+        </h2>
         <Card>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Feature</th>
-                    {PLANS.map(({ name, highlight }) => (
-                      <th
-                        key={name}
-                        className={`px-4 py-3 text-center font-semibold ${
-                          highlight ? "text-violet-600" : "text-foreground"
-                        }`}
-                      >
-                        {name}
+            {isLoading ? (
+              <Skeleton className="h-96 w-full rounded-3xl" />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="px-4 py-3 font-medium text-muted-foreground">
+                        Feature
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {ROWS.map(({ label, key }, i) => (
-                    <tr key={key} className={i % 2 !== 0 ? "bg-muted/30" : ""}>
-                      <td className="px-4 py-3 text-muted-foreground">{label}</td>
-                      {PLANS.map(({ name, features }) => (
-                        <td key={name} className="px-4 py-3 text-center">
-                          <Cell value={features[key] as string | boolean} />
-                        </td>
+                      {plans.map((plan) => (
+                        <th
+                          key={plan.Tier}
+                          className={`px-4 py-3 text-center font-semibold ${
+                            plan.Highlight
+                              ? "text-violet-600"
+                              : "text-foreground"
+                          }`}
+                        >
+                          {plan.Name}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {ROWS.map((row, i) => (
+                      <tr
+                        key={row.label}
+                        className={i % 2 !== 0 ? "bg-muted/30" : ""}
+                      >
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {row.label}
+                        </td>
+                        {plans.map((plan) => (
+                          <td key={plan.Tier} className="px-4 py-3 text-center">
+                            <Cell value={row.value(plan)} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -4,6 +4,7 @@ import {
   cancelSubscription,
   getCancellationPreview,
   getPlans,
+  getPublicPlans,
   startCheckout,
 } from "@/lib/handlers/billingHandlers";
 import type { PaymentInterval } from "@/lib/models/billingModel";
@@ -13,6 +14,16 @@ export function usePlans() {
   return useQuery({
     queryKey: ["billing-plans"],
     queryFn: getPlans,
+    staleTime: 5 * 60_000,
+    select: (res) => res.Data ?? [],
+  });
+}
+
+/** The public catalog (marketing pricing page — no auth required). */
+export function usePublicPlans() {
+  return useQuery({
+    queryKey: ["public-plans"],
+    queryFn: getPublicPlans,
     staleTime: 5 * 60_000,
     select: (res) => res.Data ?? [],
   });

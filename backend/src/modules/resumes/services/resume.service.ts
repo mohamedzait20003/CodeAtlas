@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,10 +9,7 @@ import { randomUUID } from 'crypto';
 import { extname } from 'path';
 
 import { Resume } from '@/modules/resumes/entities/resume.entity';
-import { Subscription } from '@/modules/subscription/entities/subscription.entity';
-import { Plan } from '@/modules/subscription/entities/plan.entity';
 import { ResumeSource } from '@/shared/Domain/enums/resume-source.enum';
-import { PlanTier } from '@/shared/Domain/enums/plan-tier.enum';
 import { R2StorageService } from '@/shared/Services/r2-storage.service';
 import type { CreateResumeDto } from '@/modules/resumes/dto/create-resume.dto';
 import type {
@@ -31,8 +27,8 @@ const ALLOWED_MIME = new Set([
 
 /**
  * Saved résumés — an uploaded file (stored in Cloudflare R2) or an external
- * link. The number a user may keep is capped by their plan (Plan.resumeLimit):
- * Free 1, Starter 5, Pro unlimited. To swap on a capped plan, delete first.
+ * link. Unlimited on every plan: consumption is metered in weekly credits, so
+ * there is no reason to cap what a user stores.
  *
  * The DB stores only the R2 object key for uploads (never a URL); downloads are
  * served as short-lived presigned URLs.
@@ -41,18 +37,15 @@ const ALLOWED_MIME = new Set([
 export class ResumeService {
   constructor(
     @InjectRepository(Resume) private readonly resumes: Repository<Resume>,
-    @InjectRepository(Subscription)
-    private readonly subscriptions: Repository<Subscription>,
-    @InjectRepository(Plan) private readonly plans: Repository<Plan>,
     private readonly storage: R2StorageService,
   ) {}
 
   async list(userId: string): Promise<ResumeListView> {
-    const [rows, limit] = await Promise.all([
-      this.resumes.find({ where: { userId }, order: { createdAt: 'DESC' } }),
-      this.resumeLimit(userId),
-    ]);
-    return { Items: rows.map((r) => this.toView(r)), Limit: limit };
+    const rows = await this.resumes.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+    return { Items: rows.map((r) => this.toView(r)), Limit: -1 };
   }
 
   async create(
@@ -67,8 +60,6 @@ export class ResumeService {
         'Provide either a file upload or a link URL — exactly one.',
       );
     }
-
-    await this.assertUnderLimit(userId);
 
     const row = file
       ? await this.buildUpload(userId, file)
@@ -123,31 +114,6 @@ export class ResumeService {
       mimeType: file.mimetype,
       sizeBytes: file.size,
     });
-  }
-
-  /** Free 1 / Starter 5 / Pro unlimited (-1) — enforced before create. */
-  private async assertUnderLimit(userId: string): Promise<void> {
-    const limit = await this.resumeLimit(userId);
-    if (limit === -1) return;
-
-    const count = await this.resumes.count({ where: { userId } });
-    if (count >= limit) {
-      throw new ConflictException(
-        `Your plan allows ${limit} saved résumé${
-          limit === 1 ? '' : 's'
-        }. Delete one to add another.`,
-      );
-    }
-  }
-
-  private async resumeLimit(userId: string): Promise<number> {
-    const subscription = await this.subscriptions.findOne({
-      where: { userId },
-    });
-    const plan =
-      (subscription?.plan as Plan | undefined) ??
-      (await this.plans.findOne({ where: { tier: PlanTier.FREE } }));
-    return plan?.resumeLimit ?? 1;
   }
 
   private validateFile(file: UploadedResumeFile): void {

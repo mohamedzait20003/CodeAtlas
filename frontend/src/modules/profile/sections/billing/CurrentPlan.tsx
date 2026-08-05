@@ -14,6 +14,7 @@ import { Button } from "@/common/components/ui/button";
 import { Skeleton } from "@/common/components/ui/skeleton";
 import { UsageMeter } from "@/modules/client/components/UsageMeter";
 import { useDashboard } from "@/lib/hooks/useDashboard";
+
 import {
   useCancellationPreview,
   useCancelSubscription,
@@ -90,21 +91,19 @@ export function CurrentPlan() {
           </div>
         )}
 
-        <UsageMeter
-          label="Compose Your Profile this period"
-          used={Usage.CompositionsUsed}
-          limit={Usage.CompositionLimit}
-        />
-        <UsageMeter
-          label="Repo READMEs this period"
-          used={Usage.GenerationsUsed}
-          limit={Usage.GenerationLimit}
-        />
-        <UsageMeter
-          label="Repositories analyzed"
-          used={Usage.ReposAnalyzed}
-          limit={Usage.RepoLimit}
-        />
+        <div className="space-y-1.5">
+          <UsageMeter
+            label="Credits this week"
+            used={Usage.CreditsUsed}
+            limit={Usage.WeeklyCredits}
+          />
+          <p className="text-xs text-muted-foreground">
+            Credits are spent on the LLM tokens a run actually uses — about 20
+            for a project README, 70 for a profile composition.
+            {Usage.CreditsHeld > 0 &&
+              ` ${Usage.CreditsHeld} are reserved by a run in progress.`}
+          </p>
+        </div>
 
         {/* Cancel flow — always previews the exact outcome before applying. */}
         {paid && !scheduledEnd && (
@@ -170,11 +169,10 @@ export function CurrentPlan() {
         )}
       </CardContent>
 
-      {Usage.PeriodEnd && (
-        <CardFooter className="border-t text-sm text-muted-foreground">
-          Usage resets on {formatDate(Usage.PeriodEnd)}.
-        </CardFooter>
-      )}
+      <CardFooter className="border-t text-sm text-muted-foreground">
+        Credits reset {formatDate(Usage.CreditsResetAt)}
+        {Usage.PeriodEnd && ` · plan renews ${formatDate(Usage.PeriodEnd)}`}.
+      </CardFooter>
     </Card>
   );
 }

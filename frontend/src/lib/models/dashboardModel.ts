@@ -11,16 +11,19 @@ export interface DashboardPlan {
 }
 
 export interface DashboardUsage {
-  /** "Compose Your Profile" runs used this period (enforced by the quota guard). */
-  CompositionsUsed: number;
-  /** -1 = unlimited. */
-  CompositionLimit: number;
-  GenerationsUsed: number;
-  /** -1 = unlimited. */
-  GenerationLimit: number;
+  /** Credits the plan grants each week. -1 = unlimited. */
+  WeeklyCredits: number;
+  /** Settled from actual LLM token usage this week. */
+  CreditsUsed: number;
+  /** Reserved by runs still in flight. */
+  CreditsHeld: number;
+  /** WeeklyCredits − used − held, floored at 0 (-1 when unlimited). */
+  CreditsRemaining: number;
+  /** When the weekly balance resets (next Monday 00:00 UTC). */
+  CreditsResetAt: string;
+  /** Informational — repositories are no longer capped. */
   ReposAnalyzed: number;
-  /** -1 = unlimited. */
-  RepoLimit: number;
+  /** End of the paid subscription period, when there is one. */
   PeriodEnd: string | null;
 }
 

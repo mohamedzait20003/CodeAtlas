@@ -106,15 +106,34 @@ automatically because quota reads the projected plan.
 
 ## Subscription tiers
 
+Everything consumable is metered with **one weekly credit balance** — there are no
+per-feature caps, and repositories and résumés are unlimited on every tier.
+
 | | Free | Starter | Pro |
 |---|---|---|---|
-| Repos analyzable | 3 | 25 | ∞ |
-| Project READMEs / month | 5 | 75 | 750 |
-| Profile composes / month | 1 | 4 | ∞ |
+| Credits / week | 300 | 3,000 | 15,000 |
+| ≈ project READMEs | 15 | 150 | 750 |
+| ≈ profile composes | 4 | 42 | 214 |
+| Repos & résumés | ∞ | ∞ | ∞ |
 | Model tier | economy | standard | premium |
 | Private repos | — | ✓ | ✓ |
 
-Limits live in the `plans` table (and its `features` JSONB), tunable without a redeploy.
+**Credits are priced in LLM tokens**, so a run costs what it actually costs:
+`ceil((inputTokens + 4 × outputTokens) / 1000)` — output is weighted because it costs
+several times more at every provider. Since the real cost is only known once the model
+reports usage, a run **holds** an estimate at enqueue (≈20 project, ≈70 profile) and
+**settles** the difference on completion; a failed run releases its hold and charges
+nothing. The balance resets Monday 00:00 UTC — a new week is simply a new counter row,
+so unused credits expire with no scheduled job.
+
+**Every tier detail is served from the database**, so nothing above is hard-coded in the
+UI: `plans` holds the grant (`weekly_credits`), the feature gates (`features` JSONB), and
+the presentation (`name`, `description`, `cta_label`, `highlight`, `sort_order`). Two
+endpoints expose it — public **`GET /plans`** for the marketing pricing page (prices for
+the default region, or `?region=`) and authenticated **`GET /billing/plans`** for the
+billing page (prices for the user's own region). Both return the credit grant plus the
+approximate runs it buys, so pricing copy can never drift from what the backend enforces.
+
 Paid tiers are sold **monthly or yearly** — each (plan, gateway, interval) maps to the
 gateway's own price id in `plan_prices`. READMEs are currently committed **directly** to
 the default branch on all tiers; PR-based push is on the roadmap.

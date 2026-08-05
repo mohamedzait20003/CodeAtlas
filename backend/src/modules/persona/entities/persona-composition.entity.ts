@@ -86,6 +86,10 @@ export class PersonaComposition {
   @Column({ type: 'int', name: 'output_tokens', nullable: true })
   outputTokens: number | null;
 
+  /** Credits held for this run at enqueue; released when it settles or fails. */
+  @Column({ type: 'int', name: 'credits_held', default: 0 })
+  creditsHeld: number;
+
   @Column({ type: 'text', nullable: true })
   error: string | null;
 

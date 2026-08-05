@@ -1,10 +1,10 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 
 import { Roles } from '@/shared/Decorators/auth-role.decorator';
-import { Quota } from '@/shared/Decorators/quota.decorator';
+import { Credits, HeldCredits } from '@/shared/Decorators/credits.decorator';
 import { CurrentUser } from '@/shared/Decorators/current-user.decorator';
 import { UserRole } from '@/shared/Domain/enums/user-role.enum';
-import { QuotaKind } from '@/shared/Domain/enums/quota-kind.enum';
+import { CreditAction } from '@/shared/Domain/enums/credit-action.enum';
 import type { AuthenticatedUser } from '@/shared/Contracts/authenticated-user.contract';
 import { ProjectCompositionService } from '@/modules/project/services/project-composition.service';
 import { StartRepoCompositionDto } from '@/modules/project/dto/start-repo-composition.dto';
@@ -18,14 +18,15 @@ export class GenerateCompositionController extends ProjectBaseController {
     super();
   }
 
-  @Quota(QuotaKind.REPO_GENERATION)
+  @Credits(CreditAction.PROJECT_COMPOSITION)
   @Roles(UserRole.USER)
   @Post(':id/generate')
   generate(
     @CurrentUser() user: AuthenticatedUser,
     @Param('id') id: string,
     @Body() dto: StartRepoCompositionDto,
+    @HeldCredits() creditsHeld: number,
   ): Promise<CompositionStartView> {
-    return this.projectGen.start(user.userId, id, dto);
+    return this.projectGen.start(user.userId, id, dto, creditsHeld);
   }
 }

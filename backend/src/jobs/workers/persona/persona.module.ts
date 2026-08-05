@@ -3,6 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
+import { Plan } from '@/modules/subscription/entities/plan.entity';
+import { Subscription } from '@/modules/subscription/entities/subscription.entity';
+import { CreditsService } from '@/modules/subscription/services/credits.service';
 import { User } from '@/modules/identity/entities/user.entity';
 import { Resume } from '@/modules/resumes/entities/resume.entity';
 import { EncryptionService } from '@/shared/Services/encryption.service';
@@ -22,10 +25,18 @@ import { PersonaGenerationRunner } from './services/persona-generation-runner.se
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PersonaComposition, UsageCounter, User, Resume]),
+    TypeOrmModule.forFeature([
+      PersonaComposition,
+      UsageCounter,
+      Plan,
+      Subscription,
+      User,
+      Resume,
+    ]),
   ],
   providers: [
     PersonaGenerationRunner,
+    CreditsService,
     PersonaContextService,
     GithubReaderService,
     ResumeTextService,

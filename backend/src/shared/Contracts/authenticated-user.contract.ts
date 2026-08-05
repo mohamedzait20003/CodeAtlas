@@ -11,6 +11,8 @@ declare global {
   namespace Express {
     interface Request {
       user?: AuthenticatedUser;
+      /** Credits reserved by `CreditsGuard`; the handler records it on the run. */
+      creditsHeld?: number;
     }
   }
 }

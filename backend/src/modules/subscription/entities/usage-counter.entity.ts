@@ -21,15 +21,19 @@ export class UsageCounter {
   @JoinColumn({ name: 'user_id' })
   profile: any;
 
-  /** First day of the billing period (ISO date string, e.g. "2026-06-01"). */
+  /**
+   * Monday of the credit week, UTC (ISO date string, e.g. "2026-08-03"). The
+   * weekly reset is implicit: a new week means a new row, so unused credits
+   * simply expire — no scheduled job needed.
+   */
   @Column({ type: 'date', name: 'period_start' })
   periodStart: string;
 
-  /** Per-repo README generations used this period (vs `Plan.generationLimit`). */
-  @Column({ type: 'int', name: 'generations_used', default: 0 })
-  generationsUsed: number;
+  /** Credits settled this week from actual LLM token usage. */
+  @Column({ type: 'int', name: 'credits_used', default: 0 })
+  creditsUsed: number;
 
-  /** "Compose Your Profile" runs used this period (vs `PlanFeatures.profileCompositions`). */
-  @Column({ type: 'int', name: 'profile_compositions_used', default: 0 })
-  profileCompositionsUsed: number;
+  /** Credits held by runs that are queued or in flight, not yet settled. */
+  @Column({ type: 'int', name: 'credits_held', default: 0 })
+  creditsHeld: number;
 }

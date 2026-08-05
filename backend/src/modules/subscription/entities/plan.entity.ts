@@ -18,21 +18,37 @@ export class Plan {
   @Column({ type: 'enum', enum: PlanTier, unique: true })
   tier: PlanTier;
 
+  /** Display name shown on the pricing + billing pages. */
+  @Column({ type: 'text' })
+  name: string;
+
+  /** One-line pitch under the price on the marketing card. */
+  @Column({ type: 'text', default: '' })
+  description: string;
+
+  /** Call-to-action label on the marketing card. */
+  @Column({ type: 'text', name: 'cta_label', default: 'Get started' })
+  ctaLabel: string;
+
+  /** Renders as the highlighted "Most popular" column. */
+  @Column({ type: 'boolean', default: false })
+  highlight: boolean;
+
+  /** Ascending display order on the pricing pages. */
+  @Column({ type: 'int', name: 'sort_order', default: 0 })
+  sortOrder: number;
+
   /** Price in cents. */
   @Column({ type: 'int', name: 'price_monthly', default: 0 })
   priceMonthly: number;
 
-  /** -1 = unlimited. */
-  @Column({ type: 'int', name: 'repo_limit', default: 3 })
-  repoLimit: number;
-
-  /** Max generations per billing period. -1 = unlimited. */
-  @Column({ type: 'int', name: 'generation_limit', default: 5 })
-  generationLimit: number;
-
-  /** Max saved résumés (upload or link). -1 = unlimited. */
-  @Column({ type: 'int', name: 'resume_limit', default: 1 })
-  resumeLimit: number;
+  /**
+   * Credits granted each week (resets Monday 00:00 UTC, unused credits expire).
+   * One credit ≈ 1k weighted LLM tokens — see `CreditsService.creditCost`.
+   * -1 = unlimited.
+   */
+  @Column({ type: 'int', name: 'weekly_credits', default: 300 })
+  weeklyCredits: number;
 
   @Column({
     type: 'enum',

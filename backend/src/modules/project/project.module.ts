@@ -9,7 +9,7 @@ import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
 import { IdentityModule } from '@/modules/identity/identity.module';
 import { SubscriptionModule } from '@/modules/subscription/subscription.module';
 import { AuthGuard } from '@/shared/Guards/auth.guard';
-import { QuotaGuard } from '@/shared/Guards/quota.guard';
+import { CreditsGuard } from '@/shared/Guards/credits.guard';
 
 import { ListReposController } from '@/modules/project/controllers/list-repos.controller';
 import { RepoDetailController } from '@/modules/project/controllers/repo-detail.controller';
@@ -45,7 +45,7 @@ import { ProjectCompositionFactory } from '@/modules/project/factories/project-c
     ProjectCommitService,
     ProjectCompositionFactory,
     AuthGuard,
-    QuotaGuard,
+    CreditsGuard,
   ],
 })
 export class ProjectModule {}

@@ -12,11 +12,12 @@ import { PaymentEvent } from '@/modules/subscription/entities/payment-event.enti
 import { IdentityModule } from '@/modules/identity/identity.module';
 import { AuthGuard } from '@/shared/Guards/auth.guard';
 import { PlansService } from '@/modules/subscription/services/plans.service';
-import { QuotaService } from '@/modules/subscription/services/quota.service';
+import { CreditsService } from '@/modules/subscription/services/credits.service';
 
 import { AiModelsController } from '@/modules/subscription/controllers/ai-models.controller';
 import { ModelsService } from '@/modules/subscription/services/models.service';
 import { ListPlansController } from '@/modules/subscription/controllers/list-plans.controller';
+import { PublicPlansController } from '@/modules/subscription/controllers/public-plans.controller';
 import { CheckoutController } from '@/modules/subscription/controllers/checkout.controller';
 import { WebhookController } from '@/modules/subscription/controllers/webhook.controller';
 import { CancellationPreviewController } from '@/modules/subscription/controllers/cancellation-preview.controller';
@@ -32,7 +33,7 @@ import { CancellationPolicyFactory } from '@/modules/subscription/factories/canc
 /**
  * Subscription module — plans, the AI-model catalog, per-period usage, and billing
  * (region-selected payment gateways + hosted checkout). Owns the plan/quota domain
- * services ({@link PlansService}, {@link QuotaService}) that the compose modules consume.
+ * services ({@link PlansService}, {@link CreditsService}) that the compose modules consume.
  */
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CancellationPolicyFactory } from '@/modules/subscription/factories/canc
   controllers: [
     AiModelsController,
     ListPlansController,
+    PublicPlansController,
     CheckoutController,
     WebhookController,
     CancellationPreviewController,
@@ -59,7 +61,7 @@ import { CancellationPolicyFactory } from '@/modules/subscription/factories/canc
   providers: [
     ModelsService,
     PlansService,
-    QuotaService,
+    CreditsService,
     BillingService,
     WebhookService,
     CancellationService,
@@ -69,6 +71,6 @@ import { CancellationPolicyFactory } from '@/modules/subscription/factories/canc
     StripeGateway,
     AuthGuard,
   ],
-  exports: [PlansService, QuotaService],
+  exports: [PlansService, CreditsService],
 })
 export class SubscriptionModule {}

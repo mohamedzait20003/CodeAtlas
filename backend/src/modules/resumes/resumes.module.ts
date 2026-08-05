@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Resume } from '@/modules/resumes/entities/resume.entity';
-import { Subscription } from '@/modules/subscription/entities/subscription.entity';
-import { Plan } from '@/modules/subscription/entities/plan.entity';
 import { IdentityModule } from '@/modules/identity/identity.module';
 import { AuthGuard } from '@/shared/Guards/auth.guard';
 
@@ -14,11 +12,10 @@ import { DeleteResumeController } from '@/modules/resumes/controllers/delete-res
 import { ResumeService } from '@/modules/resumes/services/resume.service';
 import { R2StorageService } from '@/shared/Services/r2-storage.service';
 
-/** Résumé storage — upload or link, capped per plan (Plan.resumeLimit). */
+/** Résumé storage — upload or link. Unlimited; usage is metered in credits. */
 @Module({
   imports: [
-    // Subscription + Plan power the per-plan résumé cap.
-    TypeOrmModule.forFeature([Resume, Subscription, Plan]),
+    TypeOrmModule.forFeature([Resume]),
     // Provides TOKEN_SERVICE for AuthGuard.
     IdentityModule,
   ],

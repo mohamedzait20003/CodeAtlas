@@ -7,11 +7,11 @@ import type { Cache } from 'cache-manager';
 import { User } from '@/modules/identity/entities/user.entity';
 import { Subscription } from '@/modules/subscription/entities/subscription.entity';
 import { Plan } from '@/modules/subscription/entities/plan.entity';
-import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
 import { Repo } from '@/modules/project/entities/repo.entity';
 import { PersonaComposition } from '@/modules/persona/entities/persona-composition.entity';
 import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { PlanTier } from '@/shared/Domain/enums/plan-tier.enum';
+import { CreditsService } from '@/modules/subscription/services/credits.service';
 import type { DashboardData } from '@/modules/analytics/dto/dashboard.dto';
 
 /** How long a per-user dashboard payload is cached (ms). */
@@ -36,8 +36,7 @@ export class DashboardService {
     @InjectRepository(Subscription)
     private readonly subscriptions: Repository<Subscription>,
     @InjectRepository(Plan) private readonly plans: Repository<Plan>,
-    @InjectRepository(UsageCounter)
-    private readonly usage: Repository<UsageCounter>,
+    private readonly credits: CreditsService,
     @InjectRepository(Repo) private readonly repos: Repository<Repo>,
     @InjectRepository(PersonaComposition)
     private readonly personas: Repository<PersonaComposition>,
@@ -63,15 +62,12 @@ export class DashboardService {
   }
 
   private async build(userId: string): Promise<DashboardData> {
-    const [user, subscription, reposAnalyzed, usageRow, personas, projects] =
+    const [user, subscription, reposAnalyzed, credits, personas, projects] =
       await Promise.all([
         this.users.findOne({ where: { id: userId } }),
         this.subscriptions.findOne({ where: { userId } }),
         this.repos.count({ where: { userId } }),
-        this.usage.findOne({
-          where: { userId },
-          order: { periodStart: 'DESC' },
-        }),
+        this.credits.balance(userId),
         this.personas.find({
           where: { userId },
           order: { createdAt: 'DESC' },
@@ -127,12 +123,12 @@ export class DashboardService {
           : null,
       },
       Usage: {
-        CompositionsUsed: usageRow?.profileCompositionsUsed ?? 0,
-        CompositionLimit: plan?.features.profileCompositions ?? 1,
-        GenerationsUsed: usageRow?.generationsUsed ?? 0,
-        GenerationLimit: plan?.generationLimit ?? 5,
+        WeeklyCredits: credits.weeklyCredits,
+        CreditsUsed: credits.used,
+        CreditsHeld: credits.held,
+        CreditsRemaining: credits.remaining,
+        CreditsResetAt: credits.weekResetsAt,
         ReposAnalyzed: reposAnalyzed,
-        RepoLimit: plan?.repoLimit ?? 3,
         PeriodEnd: subscription?.currentPeriodEnd?.toISOString() ?? null,
       },
       RecentGenerations: recent.map((g) => ({

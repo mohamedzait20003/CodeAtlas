@@ -7,7 +7,7 @@ import { AiModel } from '@/modules/subscription/entities/ai-model.entity';
 import { IdentityModule } from '@/modules/identity/identity.module';
 import { SubscriptionModule } from '@/modules/subscription/subscription.module';
 import { AuthGuard } from '@/shared/Guards/auth.guard';
-import { QuotaGuard } from '@/shared/Guards/quota.guard';
+import { CreditsGuard } from '@/shared/Guards/credits.guard';
 import { LlmProviderFactory } from '@/shared/Factories/llm-provider.factory';
 
 import { StartCompositionController } from '@/modules/persona/controllers/start-composition.controller';
@@ -42,7 +42,7 @@ import { PersonaCompositionFactory } from '@/modules/persona/factories/persona-c
     PersonaCompositionFactory,
     LlmProviderFactory,
     AuthGuard,
-    QuotaGuard,
+    CreditsGuard,
   ],
 })
 export class PersonaModule {}

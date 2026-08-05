@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { Repo } from '@/modules/project/entities/repo.entity';
 import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
+import { Plan } from '@/modules/subscription/entities/plan.entity';
+import { Subscription } from '@/modules/subscription/entities/subscription.entity';
+import { CreditsService } from '@/modules/subscription/services/credits.service';
 import { User } from '@/modules/identity/entities/user.entity';
 import { EncryptionService } from '@/shared/Services/encryption.service';
 import { LlmProviderFactory } from '@/shared/Factories/llm-provider.factory';
@@ -19,10 +22,18 @@ import { ProjectGenerationRunner } from './services/project-generation-runner.se
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProjectComposition, Repo, UsageCounter, User]),
+    TypeOrmModule.forFeature([
+      ProjectComposition,
+      Repo,
+      UsageCounter,
+      Plan,
+      Subscription,
+      User,
+    ]),
   ],
   providers: [
     ProjectGenerationRunner,
+    CreditsService,
     ProjectContentService,
     ProjectReadmeAgentService,
     EncryptionService,

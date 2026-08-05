@@ -51,6 +51,7 @@ export class ProjectCompositionService {
     userId: string,
     githubRepoId: string,
     dto: StartRepoCompositionDto,
+    creditsHeld = 0,
   ): Promise<CompositionStartView> {
     const item = await this.repos.findById(userId, githubRepoId);
     if (!item) throw new NotFoundException('Repository not found.');
@@ -69,6 +70,7 @@ export class ProjectCompositionService {
         aiModelId: model.id,
         provider: model.provider,
         model: model.modelId,
+        creditsHeld,
         pushMode: PushMode.DIRECT, // all tiers direct-push (mirrors persona)
       }),
     );

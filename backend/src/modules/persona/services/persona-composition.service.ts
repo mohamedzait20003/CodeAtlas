@@ -44,6 +44,7 @@ export class PersonaCompositionService {
   async start(
     userId: string,
     dto: StartCompositionDto,
+    creditsHeld = 0,
   ): Promise<CompositionStartView> {
     const plan = await this.plans.forUser(userId);
     const model = await this.resolveModel(plan, dto.modelId);
@@ -57,6 +58,7 @@ export class PersonaCompositionService {
         aiModelId: model.id,
         provider: model.provider,
         model: model.modelId,
+        creditsHeld,
         pushMode: PushMode.DIRECT, // all tiers push direct to the default branch
       }),
     );

@@ -4,13 +4,12 @@ import { Repository } from 'typeorm';
 
 import { ProjectComposition } from '@/modules/project/entities/project-composition.entity';
 import { Repo } from '@/modules/project/entities/repo.entity';
-import { UsageCounter } from '@/modules/subscription/entities/usage-counter.entity';
+import { CreditsService } from '@/modules/subscription/services/credits.service';
 import { LlmProvider } from '@/shared/Domain/enums/llm-provider.enum';
 import {
   GenerationRunner,
   type AgentOutput,
   type PhaseHook,
-  type UsageField,
 } from '@/jobs/shared/generation-runner.base';
 import { ProjectContentService } from './project-content.service';
 import { ProjectReadmeAgentService } from './project-readme-agent.service';
@@ -22,17 +21,15 @@ import { ProjectReadmeAgentService } from './project-readme-agent.service';
  */
 @Injectable()
 export class ProjectGenerationRunner extends GenerationRunner<ProjectComposition> {
-  protected readonly usageField: UsageField = 'generationsUsed';
-
   constructor(
     @InjectRepository(ProjectComposition)
     compositions: Repository<ProjectComposition>,
-    @InjectRepository(UsageCounter) usage: Repository<UsageCounter>,
+    credits: CreditsService,
     @InjectRepository(Repo) private readonly repos: Repository<Repo>,
     private readonly repoContent: ProjectContentService,
     private readonly repoAgent: ProjectReadmeAgentService,
   ) {
-    super(compositions, usage);
+    super(compositions, credits);
   }
 
   protected async generate(

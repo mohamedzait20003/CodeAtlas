@@ -6,9 +6,15 @@ import type {
   PlansResponse,
 } from "../models/billingModel";
 
-/** Plans + prices for the caller's region gateway. */
+/** Plans + prices for the caller's region gateway (signed-in billing page). */
 export async function getPlans(): Promise<PlansResponse> {
   const res = await baseApi.get<PlansResponse>("/billing/plans");
+  return res.data;
+}
+
+/** The public pricing catalog — no auth, used by the marketing pricing page. */
+export async function getPublicPlans(): Promise<PlansResponse> {
+  const res = await baseApi.get<PlansResponse>("/plans");
   return res.data;
 }
 
